@@ -1,2 +1,2 @@
-# ziqni-transformers-sample
-Sample implementation using the ZIQNI transformer
+# ziqni-transformers-test
+ZIQNI transformer test harness implementation - Alpha release 

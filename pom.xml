@@ -3,13 +3,13 @@
     
     <modelVersion>4.0.0</modelVersion>
     
-    <groupId>it.sisal</groupId>
+    <groupId>com.ziqni</groupId>
     <artifactId>ziqni-transformer-test</artifactId>
     <packaging>jar</packaging>
     <description>ZIQNI Transformer Test</description>
     <name>ZIQNI Transformer Test</name>
     
-    <version>1.0.0</version>
+    <version>0.0.1</version>
 
     <properties>
 
