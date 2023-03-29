@@ -4,10 +4,10 @@
     <modelVersion>4.0.0</modelVersion>
     
     <groupId>it.sisal</groupId>
-    <artifactId>ziqni-transformer-sample</artifactId>
+    <artifactId>ziqni-transformer-test</artifactId>
     <packaging>jar</packaging>
-    <description>ZIQNI Transformer Sample</description>
-    <name>ZIQNI Transformer</name>
+    <description>ZIQNI Transformer Test</description>
+    <name>ZIQNI Transformer Test</name>
     
     <version>1.0.0</version>
 
@@ -31,6 +31,7 @@
         <commons.codec.version>1.10</commons.codec.version>
         <commons-configuration2.version>2.7</commons-configuration2.version>
         <commons-beanutils.version>1.9.4</commons-beanutils.version>
+        <lombok.version>1.18.20</lombok.version>
     </properties>
     
     <dependencies>
@@ -69,14 +70,28 @@
             <artifactId>json4s-jackson_2.13</artifactId>
             <version>${scala.json4s.version}</version>
         </dependency>
-
-        <!-- test dependencies -->
         <dependency>
             <groupId>com.ziqni</groupId>
             <artifactId>ziqni-admin-sdk</artifactId>
             <version>${ziqni.admin.version}</version>
-            <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>${commons.codec.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-configuration2</artifactId>
+            <version>${commons-configuration2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>${commons-beanutils.version}</version>
+        </dependency>
+
+        <!-- test dependencies -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
@@ -94,21 +109,6 @@
             <artifactId>scalatest_2.13</artifactId>
             <version>${scala.test.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>${commons.codec.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-configuration2</artifactId>
-            <version>${commons-configuration2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-beanutils</groupId>
-            <artifactId>commons-beanutils</artifactId>
-            <version>${commons-beanutils.version}</version>
         </dependency>
 
         <!-- Supported brokers client libraries -->
@@ -136,6 +136,12 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>${logback.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 
