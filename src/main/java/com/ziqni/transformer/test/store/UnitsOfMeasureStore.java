@@ -2,6 +2,7 @@ package com.ziqni.transformer.test.store;
 
 import com.github.benmanes.caffeine.cache.*;
 import com.ziqni.admin.sdk.model.Result;
+import com.ziqni.admin.sdk.model.Reward;
 import com.ziqni.admin.sdk.model.UnitOfMeasure;
 import com.ziqni.admin.sdk.model.UnitOfMeasureType;
 import com.ziqni.transformer.test.concurrent.ZiqniExecutors;
@@ -12,13 +13,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scala.Option;
 
+import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class UnitsOfMeasureStore implements AsyncCacheLoader<@NonNull String, @NonNull UnitOfMeasure>, RemovalListener<@NonNull String, @NonNull UnitOfMeasure> {
 
+    private final static AtomicInteger identifierCounter = new AtomicInteger();
     private static final Logger logger = LoggerFactory.getLogger(UnitsOfMeasureStore.class);
 
     public final AsyncLoadingCache<@NonNull String, @NonNull UnitOfMeasure> cache = Caffeine
@@ -46,7 +50,20 @@ public class UnitsOfMeasureStore implements AsyncCacheLoader<@NonNull String, @N
     }
 
     public UnitOfMeasure makeMock(){
-
+        final var identifierCount = identifierCounter.incrementAndGet();
+        return new UnitOfMeasure()
+                .id("memb-" + identifierCount)
+                .spaceName("test-space-name")
+                .created(OffsetDateTime.now())
+                .customFields(java.util.Map.of("test-custom-field","test-val"))
+                .addTagsItem("test-tag")
+                .metadata(java.util.Map.of("test-metadata","test-val"))
+                .name("Test-product")
+                .description("Test-description")
+                .key("test-key" + identifierCount)
+                .isoCode("test-iso-code")
+                .multiplier(2.0)
+                .symbol("test-symbol");
     }
 
     @Override
