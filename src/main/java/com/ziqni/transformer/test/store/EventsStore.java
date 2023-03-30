@@ -34,6 +34,10 @@ public class EventsStore implements CacheLoader<@NonNull String, EventsStore.Eve
         return null;
     }
 
+    public EventTransaction makeMock(){
+
+    }
+
     public static class EventTransaction {
         private final List<BasicEventModel> buffer = new ArrayList<>();
 

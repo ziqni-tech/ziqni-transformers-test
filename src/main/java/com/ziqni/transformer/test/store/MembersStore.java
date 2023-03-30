@@ -38,11 +38,6 @@ public class MembersStore implements AsyncCacheLoader<@NonNull String, @NonNull 
         return null;
     }
 
-    @Override
-    public CompletableFuture<? extends @NonNull Member> asyncLoad(@NonNull String key, Executor executor) throws Exception {
-        return null;
-    }
-
     public CompletableFuture<Optional<Result>> update(String memberId, scala.Option<String> memberRefId, scala.Option<String> displayName, scala.Option<scala.collection.Seq<String>> tagsToUpdate, scala.Option<scala.collection.Map<String, String>> metaData) {
         return null;
     }
@@ -53,6 +48,15 @@ public class MembersStore implements AsyncCacheLoader<@NonNull String, @NonNull 
 
     public CompletableFuture<Optional<Member>> findMemberById(String memberId) {
         return cache.get(memberId).thenApply(Optional::ofNullable);
+    }
+
+    public Member makeMock(){
+
+    }
+
+    @Override
+    public CompletableFuture<? extends @NonNull Member> asyncLoad(@NonNull String key, Executor executor) throws Exception {
+        return null;
     }
 
     @Override

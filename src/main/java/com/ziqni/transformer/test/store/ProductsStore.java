@@ -59,6 +59,10 @@ public class ProductsStore implements AsyncCacheLoader<@NonNull String, @NonNull
         return null;
     }
 
+    public Product makeMock(){
+
+    }
+
     @Override
     public CompletableFuture<? extends @NonNull Product> asyncLoad(@NonNull String key, Executor executor) throws Exception {
         return null;

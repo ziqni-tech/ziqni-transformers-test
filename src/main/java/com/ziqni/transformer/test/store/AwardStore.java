@@ -2,6 +2,7 @@ package com.ziqni.transformer.test.store;
 
 import com.github.benmanes.caffeine.cache.*;
 import com.ziqni.admin.sdk.model.Award;
+import com.ziqni.admin.sdk.model.Reward;
 import com.ziqni.transformer.test.concurrent.ZiqniExecutors;
 import com.ziqni.transformer.test.models.BasicAward;
 import lombok.NonNull;
@@ -31,6 +32,10 @@ public class AwardStore implements AsyncCacheLoader<@NonNull String, @NonNull Aw
     }
     public CompletableFuture<Optional<Award>> getAward(String id){
         return cache.get(id).thenApply(Optional::ofNullable);
+    }
+
+    public Award makeMock(Reward reward){
+
     }
 
     @Override

@@ -33,6 +33,10 @@ public class RewardStore implements AsyncCacheLoader<@NonNull String, @NonNull R
         return cache.get(id).thenApply(Optional::ofNullable);
     }
 
+    public Reward makeMock(){
+
+    }
+
     @Override
     public CompletableFuture<? extends @NonNull Reward> asyncLoad(@NonNull String key, Executor executor) throws Exception {
         return null;

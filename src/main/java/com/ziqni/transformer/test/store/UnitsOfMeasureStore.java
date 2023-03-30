@@ -45,6 +45,10 @@ public class UnitsOfMeasureStore implements AsyncCacheLoader<@NonNull String, @N
         return null;
     }
 
+    public UnitOfMeasure makeMock(){
+
+    }
+
     @Override
     public CompletableFuture<? extends @NonNull UnitOfMeasure> asyncLoad(@NonNull String key, Executor executor) throws Exception {
         return null;

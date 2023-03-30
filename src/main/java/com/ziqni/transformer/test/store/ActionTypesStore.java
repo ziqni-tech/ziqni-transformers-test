@@ -46,6 +46,10 @@ public class ActionTypesStore implements AsyncCacheLoader<@NonNull String, Actio
 
     }
 
+    public ActionTypeEntry makeMock(){
+
+    }
+
     public static class ActionTypeEntry {
         public final String key;
         public String id;

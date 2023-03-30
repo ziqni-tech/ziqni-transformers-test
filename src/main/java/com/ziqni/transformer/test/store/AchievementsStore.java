@@ -23,8 +23,6 @@ public class AchievementsStore implements AsyncCacheLoader<@NonNull String, @Non
     private static final Logger logger = LoggerFactory.getLogger(AchievementsStore.class);
     private final static AtomicInteger identifierCounter = new AtomicInteger();
 
-    final String accountId;
-
     public final AsyncLoadingCache<@NonNull String, @NonNull Achievement> cache = Caffeine
             .newBuilder()
             .expireAfterAccess(15, TimeUnit.MINUTES)
@@ -33,8 +31,7 @@ public class AchievementsStore implements AsyncCacheLoader<@NonNull String, @Non
             .executor(ZiqniExecutors.GlobalZiqniCachesExecutor)
             .buildAsync(this);
 
-    public AchievementsStore(String accountId) {
-        this.accountId = accountId;
+    public AchievementsStore() {
     }
 
     public CompletableFuture<Optional<BasicAchievement>> getAchievement(String id) {
@@ -55,7 +52,7 @@ public class AchievementsStore implements AsyncCacheLoader<@NonNull String, @Non
 
     }
 
-    public static Achievement makeMock(){
+    public Achievement makeMock(){
         final var identifierCount = identifierCounter.incrementAndGet();
         return new Achievement()
                 .id("ach-" + identifierCount)

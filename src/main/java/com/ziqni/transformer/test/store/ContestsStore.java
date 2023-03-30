@@ -1,6 +1,7 @@
 package com.ziqni.transformer.test.store;
 
 import com.github.benmanes.caffeine.cache.*;
+import com.ziqni.admin.sdk.model.Competition;
 import com.ziqni.admin.sdk.model.Contest;
 import com.ziqni.transformer.test.concurrent.ZiqniExecutors;
 import com.ziqni.transformer.test.models.BasicContest;
@@ -28,6 +29,10 @@ public class ContestsStore implements AsyncCacheLoader<@NonNull String, @NonNull
 
     public CompletableFuture<Optional<Contest>> getContest(String id) {
         return cache.get(id).thenApply(Optional::ofNullable);
+    }
+
+    public Contest makeMock(Competition competition){
+
     }
 
     @Override
