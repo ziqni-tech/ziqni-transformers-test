@@ -74,25 +74,25 @@ public class ZiqniStores {
 
     private void generateActiveCompsWithDifferentContStatuses() {
         //Finished Contest and Active Competition
-        for (int x = 10; x < 20; x++){
+        for (int x = 50; x < 60; x++){
             Contest contest = contestsStore.makeMock(x, ContestStatus.FINISHED, CompetitionStatus.ACTIVE);
             contestsStore.put(contest);
         }
 
         //Finalised Contest and Active Competition
-        for (int x = 20; x < 30; x++){
+        for (int x = 60; x < 70; x++){
             Contest contest = contestsStore.makeMock(x, ContestStatus.FINALISED, CompetitionStatus.ACTIVE);
             contestsStore.put(contest);
         }
 
         //Ready Contest and Active Competition
-        for (int x = 30; x < 40; x++){
+        for (int x = 70; x < 80; x++){
             Contest contest = contestsStore.makeMock(x, ContestStatus.READY, CompetitionStatus.ACTIVE);
             contestsStore.put(contest);
         }
 
         //Cancelled Contest and Active Competition
-        for (int x = 40; x < 50; x++){
+        for (int x = 80; x < 90; x++){
             Contest contest = contestsStore.makeMock(x, ContestStatus.CANCELLED, CompetitionStatus.ACTIVE);
             contestsStore.put(contest);
         }
