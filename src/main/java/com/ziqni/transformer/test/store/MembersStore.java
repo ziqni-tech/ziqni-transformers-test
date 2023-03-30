@@ -2,18 +2,24 @@ package com.ziqni.transformer.test.store;
 
 import com.github.benmanes.caffeine.cache.*;
 import com.ziqni.admin.sdk.model.Member;
+import com.ziqni.admin.sdk.model.MemberType;
 import com.ziqni.admin.sdk.model.Result;
 import com.ziqni.transformer.test.concurrent.ZiqniExecutors;
 import com.ziqni.transformer.test.models.BasicMember;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.time.OffsetDateTime;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MembersStore implements AsyncCacheLoader<@NonNull String, @NonNull Member>, RemovalListener<@NonNull String, @NonNull Member> {
+
+    private final static AtomicInteger identifierCounter = new AtomicInteger();
 
     public final AsyncLoadingCache<@NonNull String, @NonNull Member> cache = Caffeine
             .newBuilder()
@@ -51,7 +57,20 @@ public class MembersStore implements AsyncCacheLoader<@NonNull String, @NonNull 
     }
 
     public Member makeMock(){
-
+        final var identifierCount = identifierCounter.incrementAndGet();
+        return new Member()
+                .id("memb-" + identifierCount)
+                .spaceName("test-space-name")
+                .created(OffsetDateTime.now())
+                .customFields(Map.of("new-field", "new-val"))
+                .addTagsItem("test-tag")
+                .metadata(Map.of("test-met", "test-key"))
+                .name("test-name")
+                .memberRefId("test-member-ref-id")
+                .memberType(MemberType.INDIVIDUAL)
+                .addTeamMembersItem("test-team-member")
+                .addConstraintsItem("test-constraint-item")
+                .timeZoneOffset("UTC");
     }
 
     @Override
