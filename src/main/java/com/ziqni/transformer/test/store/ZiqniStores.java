@@ -41,7 +41,12 @@ public class ZiqniStores {
             rewardStore.getReward("reward-" + x);
             awardStore.getAward("award-" + x);
         }
+        generateActiveContsWithDifferentCompStatuses();
+        generateActiveCompsWithDifferentContStatuses();
 
+    }
+
+    private void generateActiveContsWithDifferentCompStatuses() {
         //Finished Competition and Active Contest
         for (int x = 10; x < 20; x++){
             Contest contest = contestsStore.makeMock(x, ContestStatus.ACTIVE, CompetitionStatus.FINISHED);
@@ -65,7 +70,32 @@ public class ZiqniStores {
             Contest contest = contestsStore.makeMock(x, ContestStatus.ACTIVE, CompetitionStatus.CANCELLED);
             contestsStore.put(contest);
         }
+    }
 
+    private void generateActiveCompsWithDifferentContStatuses() {
+        //Finished Contest and Active Competition
+        for (int x = 10; x < 20; x++){
+            Contest contest = contestsStore.makeMock(x, ContestStatus.FINISHED, CompetitionStatus.ACTIVE);
+            contestsStore.put(contest);
+        }
+
+        //Finalised Contest and Active Competition
+        for (int x = 20; x < 30; x++){
+            Contest contest = contestsStore.makeMock(x, ContestStatus.FINALISED, CompetitionStatus.ACTIVE);
+            contestsStore.put(contest);
+        }
+
+        //Ready Contest and Active Competition
+        for (int x = 30; x < 40; x++){
+            Contest contest = contestsStore.makeMock(x, ContestStatus.READY, CompetitionStatus.ACTIVE);
+            contestsStore.put(contest);
+        }
+
+        //Cancelled Contest and Active Competition
+        for (int x = 40; x < 50; x++){
+            Contest contest = contestsStore.makeMock(x, ContestStatus.CANCELLED, CompetitionStatus.ACTIVE);
+            contestsStore.put(contest);
+        }
     }
 
 }
