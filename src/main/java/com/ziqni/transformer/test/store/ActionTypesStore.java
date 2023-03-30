@@ -1,21 +1,25 @@
 package com.ziqni.transformer.test.store;
 
 import com.github.benmanes.caffeine.cache.*;
-import com.ziqni.admin.sdk.model.ActionType;
-import com.ziqni.admin.sdk.model.ModelApiResponse;
-import com.ziqni.admin.sdk.model.Result;
+import com.ziqni.admin.sdk.model.*;
 import com.ziqni.transformer.test.concurrent.ZiqniExecutors;
 import lombok.NonNull;
 import scala.Option;
 
 import javax.annotation.Nullable;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ActionTypesStore implements AsyncCacheLoader<@NonNull String, ActionTypesStore.ActionTypeEntry>, RemovalListener<@NonNull String, ActionTypesStore.ActionTypeEntry> {
+
+    private final static AtomicInteger identifierCounter = new AtomicInteger();
 
     public final AsyncLoadingCache<String, ActionTypeEntry> cache = Caffeine
             .newBuilder()
@@ -47,7 +51,8 @@ public class ActionTypesStore implements AsyncCacheLoader<@NonNull String, Actio
     }
 
     public ActionTypeEntry makeMock(){
-
+        final var identifierCount = identifierCounter.incrementAndGet();
+        return new ActionTypeEntry("action-key" + identifierCount, "actiontyp-" + identifierCount, "TestActionName");
     }
 
     public static class ActionTypeEntry {
