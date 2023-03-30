@@ -1,19 +1,23 @@
 package com.ziqni.transformer.test.store;
 
 import com.github.benmanes.caffeine.cache.*;
-import com.ziqni.admin.sdk.model.Competition;
-import com.ziqni.admin.sdk.model.Contest;
+import com.ziqni.admin.sdk.model.*;
 import com.ziqni.transformer.test.concurrent.ZiqniExecutors;
 import com.ziqni.transformer.test.models.BasicContest;
 import lombok.NonNull;
 
 import javax.annotation.Nullable;
+import java.time.OffsetDateTime;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ContestsStore implements AsyncCacheLoader<@NonNull String, @NonNull Contest>, RemovalListener<@NonNull String, @NonNull Contest> {
+
+    private final static AtomicInteger identifierCounter = new AtomicInteger();
 
     public final AsyncLoadingCache<@org.checkerframework.checker.nullness.qual.NonNull String, @org.checkerframework.checker.nullness.qual.NonNull Contest> cache = Caffeine
             .newBuilder()
@@ -32,7 +36,32 @@ public class ContestsStore implements AsyncCacheLoader<@NonNull String, @NonNull
     }
 
     public Contest makeMock(Competition competition){
+        final var identifierCount = identifierCounter.incrementAndGet();
 
+        return new Contest()
+                .id("ach-" + identifierCount)
+                .addTagsItem("tag-1").addTagsItem("tag-2").addTagsItem("tag-3")
+                .metadata(Map.of("meta-1", "key-1"))
+                .description("Blah blah blah")
+                .termsAndConditions("blah blah")
+                .spaceName("test-space-1")
+                .created(OffsetDateTime.now())
+                .customFields(Map.of("key-1", "value-1"))
+                .competitionId("test-competition-id")
+                .row(0)
+                .name("Test-comp")
+                .round(1)
+                .roundType(RoundType.TIMEBOUND)
+                .groupStage(1)
+                .groupStageLabel("Test-group")
+                .addEntrantsFromContestItem("Test-entrant")
+                .maxNumberOfEntrants(10)
+                .minNumberOfEntrants(1)
+                .scheduledStartDate(OffsetDateTime.now())
+                .scheduledEndDate(OffsetDateTime.now().plusDays(1))
+                .strategies(new Strategy().rankingStrategy(new RankingStrategy().addConstraintsItem("test-ranking-strategy")))
+                .status(ContestStatus.ACTIVE)
+                .addConstraintsItem("test-constraint");
     }
 
     @Override

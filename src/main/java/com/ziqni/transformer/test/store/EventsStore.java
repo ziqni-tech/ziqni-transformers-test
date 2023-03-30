@@ -10,9 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class EventsStore implements CacheLoader<@NonNull String, EventsStore.EventTransaction> {
 
+    private final static AtomicInteger identifierCounter = new AtomicInteger();
     @Override
     public @Nullable EventsStore.EventTransaction load(@NonNull String key) throws Exception {
         return null;
@@ -35,7 +37,10 @@ public class EventsStore implements CacheLoader<@NonNull String, EventsStore.Eve
     }
 
     public EventTransaction makeMock(){
-
+        final var identifierCount = identifierCounter.incrementAndGet();
+        final var eventTrans = new EventTransaction();
+        eventTrans.addBasicEvent(new BasicEventModel(null, null, null, null, null, null, 2.0, null, null, null, null));
+        return eventTrans;
     }
 
     public static class EventTransaction {
