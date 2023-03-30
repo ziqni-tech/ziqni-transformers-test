@@ -20,10 +20,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class AwardStore implements AsyncCacheLoader<@NonNull String, @NonNull Award>, RemovalListener<@NonNull String, @NonNull Award> {
 
-    private final static AtomicInteger identifierCounter = new AtomicInteger();
     private static final Logger logger = LoggerFactory.getLogger(AwardStore.class);
+    private final static AtomicInteger identifierCounter = new AtomicInteger();
 
-    private RewardStore rewardStore;
+    private final RewardStore rewardStore;
 
     public final AsyncLoadingCache<@NonNull String, @NonNull Award> cache = Caffeine
             .newBuilder()
@@ -40,6 +40,7 @@ public class AwardStore implements AsyncCacheLoader<@NonNull String, @NonNull Aw
     public CompletableFuture<Optional<BasicAward>> getBasicAward(String id){
         return getAward(id).thenApply(x-> x.map(BasicAward::apply));
     }
+
     public CompletableFuture<Optional<Award>> getAward(String id){
         return cache.get(id).thenApply(Optional::ofNullable);
     }
