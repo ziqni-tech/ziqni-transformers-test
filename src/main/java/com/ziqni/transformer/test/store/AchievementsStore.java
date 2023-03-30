@@ -44,7 +44,7 @@ public class AchievementsStore implements AsyncCacheLoader<@NonNull String, @Non
 
     @Override
     public CompletableFuture<? extends @NonNull Achievement> asyncLoad(@NonNull String key, Executor executor) throws Exception {
-        return null;
+        return CompletableFuture.completedFuture(makeMock());
     }
 
     @Override

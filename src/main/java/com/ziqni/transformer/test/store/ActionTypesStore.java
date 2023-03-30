@@ -42,7 +42,7 @@ public class ActionTypesStore implements AsyncCacheLoader<@NonNull String, Actio
 
     @Override
     public CompletableFuture<? extends ActionTypesStore.ActionTypeEntry> asyncLoad(@NonNull String key, Executor executor) throws Exception {
-        return null;
+        return CompletableFuture.completedFuture(makeMock());
     }
 
     @Override

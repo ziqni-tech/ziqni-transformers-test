@@ -65,7 +65,7 @@ public class RewardStore implements AsyncCacheLoader<@NonNull String, @NonNull R
 
     @Override
     public CompletableFuture<? extends @NonNull Reward> asyncLoad(@NonNull String key, Executor executor) throws Exception {
-        return null;
+        return CompletableFuture.completedFuture(makeMock());
     }
 
     @Override

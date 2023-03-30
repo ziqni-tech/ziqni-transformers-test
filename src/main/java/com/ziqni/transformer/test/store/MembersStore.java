@@ -75,7 +75,7 @@ public class MembersStore implements AsyncCacheLoader<@NonNull String, @NonNull 
 
     @Override
     public CompletableFuture<? extends @NonNull Member> asyncLoad(@NonNull String key, Executor executor) throws Exception {
-        return null;
+       return CompletableFuture.completedFuture(makeMock());
     }
 
     @Override
