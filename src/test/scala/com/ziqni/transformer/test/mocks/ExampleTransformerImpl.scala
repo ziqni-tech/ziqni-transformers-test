@@ -13,7 +13,7 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 import scala.language.implicitConversions
 import scala.util.{Failure, Success}
 
-class MockTransformerImpl extends ZiqniMqTransformer with LazyLogging {
+class ExampleTransformerImpl extends ZiqniMqTransformer with LazyLogging {
   private implicit val formats: DefaultFormats.type = DefaultFormats
   private val SystemMemberRef = "system"
   private val TIER_PREFIX = "Tier"

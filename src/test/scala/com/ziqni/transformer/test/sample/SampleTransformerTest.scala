@@ -4,7 +4,8 @@
 
 package com.ziqni.transformer.test.sample
 
-import com.ziqni.transformer.test.api.ZiqniContextExt
+import com.ziqni.transformer.test.ZiqniTransformerTester
+import com.ziqni.transformer.test.mocks.ExampleTransformerImpl
 import org.scalatest._
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.must.Matchers
@@ -15,7 +16,9 @@ class SampleTransformerTest extends AnyFunSpec with Matchers with GivenWhenThen 
 
 		it("should receive a published message and transform it into an event") {
 
-      val ziqniContext = new ZiqniContextExt()
+      val ziqniTransformerTester = ZiqniTransformerTester.loadDefault()
+			val transformer = new ExampleTransformerImpl
+			transformer.rabbit(Array.empty, "","", ziqniTransformerTester.ziqniContextExt)
 
 		}
 	}

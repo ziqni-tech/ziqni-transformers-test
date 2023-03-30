@@ -26,7 +26,7 @@ object ZiqniApiClient {
 
 	val GlobalZiqniApiClientContext: ExecutionContextExecutor = ExecutionContext.fromExecutor(Executors.newCachedThreadPool())
 
-	protected[transformers] final val timeBasedUUIDGenerator = new TimeBasedUUIDGenerator()
+	final val timeBasedUUIDGenerator = new TimeBasedUUIDGenerator()
 
 	def nextId: String = ZiqniApiClient.timeBasedUUIDGenerator.getBase64UUID
 }

@@ -15,12 +15,12 @@ public class ZiqniStores {
     public final AwardStore awardStore;
    public final UnitsOfMeasureStore unitsOfMeasureStore;
 
-    public ZiqniStores() {
+    public ZiqniStores(String accountId) {
         this.eventsStore = new EventsStore();
         this.membersStore = new MembersStore();
         this.productsStore = new ProductsStore();
         this.actionTypesStore = new ActionTypesStore();
-        this.achievementsStore = new AchievementsStore();
+        this.achievementsStore = new AchievementsStore(accountId);
         this.contestsStore = new ContestsStore();
         this.rewardStore = new RewardStore();
         this.awardStore = new AwardStore();
