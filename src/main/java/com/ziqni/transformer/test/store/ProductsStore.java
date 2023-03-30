@@ -73,7 +73,7 @@ public class ProductsStore implements AsyncCacheLoader<@NonNull String, @NonNull
                 .customFields(java.util.Map.of("test-custom-field","test-val"))
                 .addTagsItem("test-tag")
                 .metadata(java.util.Map.of("test-metadata","test-val"))
-                .name("Test-product")
+                .name("Test-product-"+identifierCount)
                 .description("Test-description")
                 .adjustmentFactor(2.0)
                 .productRefId("test-product-ref-id")

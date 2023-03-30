@@ -65,7 +65,7 @@ public class MembersStore implements AsyncCacheLoader<@NonNull String, @NonNull 
                 .customFields(Map.of("new-field", "new-val"))
                 .addTagsItem("test-tag")
                 .metadata(Map.of("test-met", "test-key"))
-                .name("test-name")
+                .name("test-name-"+identifierCount)
                 .memberRefId("test-member-ref-id")
                 .memberType(MemberType.INDIVIDUAL)
                 .addTeamMembersItem("test-team-member")

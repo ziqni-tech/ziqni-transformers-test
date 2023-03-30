@@ -52,7 +52,7 @@ public class ActionTypesStore implements AsyncCacheLoader<@NonNull String, Actio
 
     public ActionTypeEntry makeMock(){
         final var identifierCount = identifierCounter.incrementAndGet();
-        return new ActionTypeEntry("action-key" + identifierCount, "actiontyp-" + identifierCount, "TestActionName");
+        return new ActionTypeEntry("action-key" + identifierCount, "actiontyp-" + identifierCount, "TestActionName-" + identifierCount);
     }
 
     public static class ActionTypeEntry {

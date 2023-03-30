@@ -48,7 +48,7 @@ public class RewardStore implements AsyncCacheLoader<@NonNull String, @NonNull R
                 .customFields(java.util.Map.of("test-custom-field","test-val"))
                 .addTagsItem("test-tag")
                 .metadata(java.util.Map.of("test-metadata","test-val"))
-                .name("Test-product")
+                .name("Test-product-"+identifierCount)
                 .description("Test-description")
                 .addConstraintsItem("test-constraint")
                 .delay(3)

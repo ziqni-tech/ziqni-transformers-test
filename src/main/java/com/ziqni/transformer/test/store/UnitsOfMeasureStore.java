@@ -58,7 +58,7 @@ public class UnitsOfMeasureStore implements AsyncCacheLoader<@NonNull String, @N
                 .customFields(java.util.Map.of("test-custom-field","test-val"))
                 .addTagsItem("test-tag")
                 .metadata(java.util.Map.of("test-metadata","test-val"))
-                .name("Test-product")
+                .name("Test-oum-"+identifierCount)
                 .description("Test-description")
                 .key("test-key" + identifierCount)
                 .isoCode("test-iso-code")

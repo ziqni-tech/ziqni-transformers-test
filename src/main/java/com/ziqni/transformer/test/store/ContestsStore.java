@@ -49,7 +49,7 @@ public class ContestsStore implements AsyncCacheLoader<@NonNull String, @NonNull
                 .customFields(Map.of("key-1", "value-1"))
                 .competitionId(competition.getId())
                 .row(0)
-                .name("Test-comp")
+                .name("Test-cont-"+identifierCount)
                 .round(1)
                 .roundType(RoundType.TIMEBOUND)
                 .groupStage(1)
