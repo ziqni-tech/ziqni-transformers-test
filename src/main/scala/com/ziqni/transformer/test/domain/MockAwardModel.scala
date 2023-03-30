@@ -49,37 +49,3 @@ class MockAwardModel(
 	override def getRewardMetaData: Option[Map[String, String]] = rewardMetaData
 
 }
-
-
-object MockAwardModel {
-
-	private var mockAwardModel: MockAwardModel = null
-
-	val AwardIdForAchievements = "awardForAchievement"
-	val AchivementEntityId = "testAchievementId"
-	val AchivementEntityType = "achievement"
-	val MemberId = "testMemberId"
-
-	private def mockReard: MockRewardModel = MockRewardModel.getMockReward
-
-	def getMockAward: MockAwardModel =
-		if(mockAwardModel == null) {
-			mockAwardModel = new MockAwardModel(
-				AchivementEntityId,
-				AchivementEntityType,
-				MemberId,
-				false,
-				AwardIdForAchievements,
-				mockReard.getRank,
-				mockReard.getName,
-				mockReard.getValue,
-				mockReard.getRewardTypeKey,
-				mockReard.getDescription,
-				mockReard.getRewardTypeId,
-				mockReard.getClRewardId,
-				mockReard.getMetaData
-			)
-			mockAwardModel
-		} else
-			mockAwardModel
-}

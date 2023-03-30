@@ -47,29 +47,3 @@ class MockRewardModel(
 	override def getClRewardId: String = rewardId
 
 }
-
-object MockRewardModel {
-
-	private var mockRewardModel: MockRewardModel = null
-
-	val RewardIdForAchievements = "rewardForAchievement"
-	val AchivementEntityId = "testAchievementId"
-
-	def getMockReward: MockRewardModel =
-		if(mockRewardModel == null) {
-			mockRewardModel = new MockRewardModel(
-				AchivementEntityId,
-				"1",
-				"Achievement Reward",
-				"This is a test reward for achievement",
-				0,
-				1.0,
-				"testRewardTypeId",
-				"Free spins",
-				"free-spins",
-				None,
-				RewardIdForAchievements)
-			mockRewardModel
-		} else
-			mockRewardModel
-}

@@ -1,12 +1,11 @@
 package com.ziqni.transformer.test
 
-import org.joda.time.format.DateTimeFormatter
 import org.joda.time.{DateTime, DateTimeZone}
+import org.joda.time.format.DateTimeFormatter
 import org.json4s.DefaultFormats
 import org.json4s.jackson.JsonMethods
 
 import java.text.SimpleDateFormat
-
 package object models {
 
 	type AccountId = String
@@ -47,9 +46,9 @@ package object models {
 
 
 	object Json {
-		implicit val formats = DefaultFormats
-		import org.json4s.JsonAST.JString
+		implicit val formats: DefaultFormats.type = DefaultFormats
 		import org.json4s._
+		import org.json4s.JsonAST.JString
 		import org.json4s.jackson.Serialization
 
 
@@ -82,8 +81,8 @@ package object models {
 		def fromJsonToString(obj: JArray): String =
 			JsonMethods.compact(JsonMethods.render(obj))
 
-		def parse(str: String): JValue =
-			org.json4s.native.JsonMethods.parse(str)
+//		def parse(str: String): JValue =
+//			org.json4s.native.JsonMethods.parse(str)
 
 		def getFromJValue[T <: Any: Manifest](jValue: JValue, key: String): T =
 			jValue.\(key).extract[T]
