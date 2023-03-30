@@ -1,5 +1,9 @@
 package com.ziqni.transformer.test.store;
 
+import com.ziqni.admin.sdk.model.CompetitionStatus;
+import com.ziqni.admin.sdk.model.Contest;
+import com.ziqni.admin.sdk.model.ContestStatus;
+
 public class ZiqniStores {
 
     public final EventsStore eventsStore;
@@ -36,6 +40,30 @@ public class ZiqniStores {
             unitsOfMeasureStore.getUnitOfMeasure("uom-" + x);
             rewardStore.getReward("reward-" + x);
             awardStore.getAward("award-" + x);
+        }
+
+        //Finished Competition and Active Contest
+        for (int x = 10; x < 20; x++){
+            Contest contest = contestsStore.makeMock(x, ContestStatus.ACTIVE, CompetitionStatus.FINISHED);
+            contestsStore.put(contest);
+        }
+
+        //Finalised Competition and Active Contest
+        for (int x = 20; x < 30; x++){
+            Contest contest = contestsStore.makeMock(x, ContestStatus.ACTIVE, CompetitionStatus.FINALISED);
+            contestsStore.put(contest);
+        }
+
+        //Ready Competition and Active Contest
+        for (int x = 30; x < 40; x++){
+            Contest contest = contestsStore.makeMock(x, ContestStatus.ACTIVE, CompetitionStatus.READY);
+            contestsStore.put(contest);
+        }
+
+        //Cancelled Competition and Active Contest
+        for (int x = 40; x < 50; x++){
+            Contest contest = contestsStore.makeMock(x, ContestStatus.ACTIVE, CompetitionStatus.CANCELLED);
+            contestsStore.put(contest);
         }
 
     }

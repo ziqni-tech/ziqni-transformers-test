@@ -35,6 +35,10 @@ public class ContestsStore implements AsyncCacheLoader<@NonNull String, @NonNull
         return cache.get(id).thenApply(Optional::ofNullable);
     }
 
+    public void put(Contest contest) {
+        cache.put(contest.getId(), CompletableFuture.completedFuture(contest));
+    }
+
     public Contest makeMock(Competition competition){
         final var identifierCount = identifierCounter.incrementAndGet();
 
@@ -62,6 +66,15 @@ public class ContestsStore implements AsyncCacheLoader<@NonNull String, @NonNull
                 .strategies(new Strategy().rankingStrategy(new RankingStrategy().addConstraintsItem("test-ranking-strategy")))
                 .status(ContestStatus.ACTIVE)
                 .addConstraintsItem("test-constraint");
+    }
+
+    public Contest makeMock(int contestIdCount, ContestStatus contestStatus, CompetitionStatus competitionStatus){
+        return makeMock(new Competition()
+                .id("test-competition-id")
+                .status(competitionStatus)
+                .name("test-comp"))
+                .status(contestStatus)
+                .id("cont-" + contestIdCount);
     }
 
     @Override
