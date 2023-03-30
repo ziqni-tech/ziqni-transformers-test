@@ -23,6 +23,8 @@ public class AwardStore implements AsyncCacheLoader<@NonNull String, @NonNull Aw
     private final static AtomicInteger identifierCounter = new AtomicInteger();
     private static final Logger logger = LoggerFactory.getLogger(AwardStore.class);
 
+    private RewardStore rewardStore;
+
     public final AsyncLoadingCache<@NonNull String, @NonNull Award> cache = Caffeine
             .newBuilder()
             .maximumSize(10_000)
@@ -30,6 +32,10 @@ public class AwardStore implements AsyncCacheLoader<@NonNull String, @NonNull Aw
             .evictionListener(this)
             .executor(ZiqniExecutors.GlobalZiqniCachesExecutor)
             .buildAsync(this);
+
+    public AwardStore(RewardStore rewardStore) {
+        this.rewardStore = rewardStore;
+    }
 
     public CompletableFuture<Optional<BasicAward>> getBasicAward(String id){
         return getAward(id).thenApply(x-> x.map(BasicAward::apply));
@@ -41,29 +47,29 @@ public class AwardStore implements AsyncCacheLoader<@NonNull String, @NonNull Aw
     public Award makeMock(Reward reward){
         final var identifierCount = identifierCounter.incrementAndGet();
         return new Award()
-                .id("ach-" + identifierCount)
+                .id("award-" + identifierCount)
                 .addTagsItem("tag-1").addTagsItem("tag-2").addTagsItem("tag-3")
-                .metadata(Map.of("meta-1", "key-1"))
+                .metadata(reward.getMetadata())
                 .claimedTimestamp(OffsetDateTime.now())
-                .constraints(List.of("constraint-1"))
-                .created(OffsetDateTime.now())
-                .delay(1)
-                .entityId("Test-entity-id")
-                .entityType(EntityType.ACHIEVEMENT)
+                .constraints(reward.getConstraints())
+                .created(reward.getCreated())
+                .delay(reward.getDelay())
+                .entityId(reward.getEntityId())
+                .entityType(reward.getEntityType())
                 .memberId("Test-member-id")
                 .memberRefId("Test-member-ref-id")
-                .period(10)
-                .pointInTime(OffsetDateTime.now())
-                .rewardId("Test-reward-id")
-                .rewardRank("1,2,3,4-7")
-                .rewardValue(123455D)
-                .rewardType(new RewardTypeReduced().id("Test-reward-type").key("test-key" + identifierCount).spaceName("test-space-1"))
-                .spaceName("test-space-1");
+                .period(reward.getPeriod())
+                .pointInTime(reward.getPointInTime())
+                .rewardId(reward.getId())
+                .rewardRank(reward.getRewardRank())
+                .rewardValue(reward.getRewardValue())
+                .rewardType(reward.getRewardType())
+                .spaceName(reward.getSpaceName());
     }
 
     @Override
     public CompletableFuture<? extends @NonNull Award> asyncLoad(@NonNull String key, Executor executor) throws Exception {
-        return null;
+        return CompletableFuture.completedFuture(makeMock(rewardStore.makeMock()));
     }
 
     @Override

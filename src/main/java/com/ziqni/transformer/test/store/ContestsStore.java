@@ -47,7 +47,7 @@ public class ContestsStore implements AsyncCacheLoader<@NonNull String, @NonNull
                 .spaceName("test-space-1")
                 .created(OffsetDateTime.now())
                 .customFields(Map.of("key-1", "value-1"))
-                .competitionId("test-competition-id")
+                .competitionId(competition.getId())
                 .row(0)
                 .name("Test-comp")
                 .round(1)
@@ -66,7 +66,7 @@ public class ContestsStore implements AsyncCacheLoader<@NonNull String, @NonNull
 
     @Override
     public CompletableFuture<? extends @NonNull Contest> asyncLoad(@NonNull String key, Executor executor) throws Exception {
-        return null;
+        return CompletableFuture.completedFuture(makeMock(new Competition().id("test-competition-id")));
     }
 
     @Override

@@ -23,7 +23,7 @@ public class ZiqniStores {
         this.achievementsStore = new AchievementsStore(accountId);
         this.contestsStore = new ContestsStore();
         this.rewardStore = new RewardStore();
-        this.awardStore = new AwardStore();
+        this.awardStore = new AwardStore(rewardStore);
         this.unitsOfMeasureStore = new UnitsOfMeasureStore();
     }
 }
