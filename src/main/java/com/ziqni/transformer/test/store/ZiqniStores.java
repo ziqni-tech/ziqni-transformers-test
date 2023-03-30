@@ -1,5 +1,11 @@
 package com.ziqni.transformer.test.store;
 
+import com.ziqni.transformer.test.models.BasicAchievement;
+
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
 public class ZiqniStores {
 
     public final EventsStore eventsStore;
@@ -26,4 +32,18 @@ public class ZiqniStores {
         this.awardStore = new AwardStore(rewardStore);
         this.unitsOfMeasureStore = new UnitsOfMeasureStore();
     }
+
+    public void generateSampleData() {
+        for (int x = 0; x < 10; x++){
+            achievementsStore.getAchievement("ach-" + x);
+            contestsStore.getContest("cont-" + x);
+            membersStore.getRefIdByMemberId("memb-" + x);
+            productsStore.getRefIdByProductId("prod-" + x);
+            unitsOfMeasureStore.getUnitOfMeasure("uom-" + x);
+            rewardStore.getReward("reward-" + x);
+            awardStore.getAward("award-" + x);
+        }
+
+    }
+
 }

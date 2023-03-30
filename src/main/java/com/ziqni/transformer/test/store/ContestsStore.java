@@ -39,7 +39,7 @@ public class ContestsStore implements AsyncCacheLoader<@NonNull String, @NonNull
         final var identifierCount = identifierCounter.incrementAndGet();
 
         return new Contest()
-                .id("ach-" + identifierCount)
+                .id("cont-" + identifierCount)
                 .addTagsItem("tag-1").addTagsItem("tag-2").addTagsItem("tag-3")
                 .metadata(Map.of("meta-1", "key-1"))
                 .description("Blah blah blah")

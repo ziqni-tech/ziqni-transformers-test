@@ -67,7 +67,7 @@ public class ProductsStore implements AsyncCacheLoader<@NonNull String, @NonNull
     public Product makeMock(){
         final var identifierCount = identifierCounter.incrementAndGet();
         return new Product()
-                .id("memb-" + identifierCount)
+                .id("prod-" + identifierCount)
                 .spaceName("test-space-name")
                 .created(OffsetDateTime.now())
                 .customFields(java.util.Map.of("test-custom-field","test-val"))

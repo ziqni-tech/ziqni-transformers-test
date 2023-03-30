@@ -52,7 +52,7 @@ public class UnitsOfMeasureStore implements AsyncCacheLoader<@NonNull String, @N
     public UnitOfMeasure makeMock(){
         final var identifierCount = identifierCounter.incrementAndGet();
         return new UnitOfMeasure()
-                .id("memb-" + identifierCount)
+                .id("uom-" + identifierCount)
                 .spaceName("test-space-name")
                 .created(OffsetDateTime.now())
                 .customFields(java.util.Map.of("test-custom-field","test-val"))

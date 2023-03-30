@@ -42,7 +42,7 @@ public class RewardStore implements AsyncCacheLoader<@NonNull String, @NonNull R
     public Reward makeMock(){
         final var identifierCount = identifierCounter.incrementAndGet();
         return new Reward()
-                .id("memb-" + identifierCount)
+                .id("reward-" + identifierCount)
                 .spaceName("test-space-name")
                 .created(OffsetDateTime.now())
                 .customFields(java.util.Map.of("test-custom-field","test-val"))
