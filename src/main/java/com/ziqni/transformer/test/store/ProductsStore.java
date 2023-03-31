@@ -1,6 +1,7 @@
 package com.ziqni.transformer.test.store;
 
 import com.github.benmanes.caffeine.cache.*;
+import com.ziqni.admin.sdk.ApiException;
 import com.ziqni.admin.sdk.ZiqniAdminApiFactory;
 import com.ziqni.admin.sdk.model.ActionTypeAdjustmentFactor;
 import com.ziqni.admin.sdk.model.Member;
@@ -11,6 +12,7 @@ import com.ziqni.transformer.test.concurrent.ZiqniExecutors;
 import com.ziqni.transformer.test.models.BasicProduct;
 import lombok.NonNull;
 import scala.Option;
+import scala.collection.JavaConverters;
 import scala.collection.Map;
 import scala.collection.Seq;
 
@@ -53,7 +55,23 @@ public class ProductsStore implements AsyncCacheLoader<@NonNull String, @NonNull
     }
 
     public CompletableFuture<Optional<String>> create(String productRefId, String displayName, Seq<String> providers, String productType, Double defaultAdjustmentFactor, Option<Map<String, String>> metaData) {
-        return null;
+        final var out = new CompletableFuture<Optional<String>>();
+        if(this.refIdCache.containsKey(productRefId))
+            out.completeExceptionally(new ApiException("product_ref_id_already_exists")); // or whatever we throw
+        else {
+            final var providersToCreate = JavaConverters.seqAsJavaList(providers);
+            final var metadata = JavaConverters.mapAsJavaMap(metaData.get());
+            final var product = makeMock()
+                    .name(displayName)
+                    .productRefId(productRefId)
+//                    .actionTypeAdjustmentFactors(defaultAdjustmentFactor)
+                    .metadata(metadata);
+            this.cache.put(product.getId(), CompletableFuture.completedFuture(product));
+            this.refIdCache.put(product.getProductRefId(), product.getId());
+            out.thenApply(x -> x.orElse(product.getId()));
+        }
+
+        return out;
     }
 
     public CompletableFuture<Optional<Result>> update(String productId, Option<String> productRefId, Option<String> displayName, Option<Seq<String>> providers, Option<String> productType, Option<Double> defaultAdjustmentFactor, Option<scala.collection.Map<String, String>> metaData) {
