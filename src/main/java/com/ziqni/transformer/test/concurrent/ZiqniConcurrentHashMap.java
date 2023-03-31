@@ -1,5 +1,6 @@
 package com.ziqni.transformer.test.concurrent;
 
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -19,6 +20,11 @@ public class ZiqniConcurrentHashMap<K,V> extends ConcurrentHashMap<K,V> {
         return out;
     }
 
+    public CompletableFuture<Optional<V>> getAsync(Object key){
+        var result = Optional.ofNullable(this.get(key));
+        return CompletableFuture.supplyAsync(() -> result);
+    }
+
     @Override
     public V replace(K key, V value) {
         return super.replace(key, value);
@@ -29,6 +35,7 @@ public class ZiqniConcurrentHashMap<K,V> extends ConcurrentHashMap<K,V> {
         out.complete(super.replace(key, value));
         return out;
     }
+
 
     ////////
 

@@ -31,6 +31,12 @@ object ZiqniTransformerTester {
       ziqniStores
       )
   }
+
+  def loadDefaultWithSampleData(): ZiqniTransformerTester = {
+    val out = loadDefault()
+    out.ziqniStores.generateSampleData()
+    out
+  }
 }
 
 case class ZiqniTransformerTester(ziqniContextExt: ZiqniContextExt, ziqniStores: ZiqniStores){

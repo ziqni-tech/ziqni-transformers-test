@@ -16,7 +16,8 @@ class SampleTransformerTest extends AnyFunSpec with Matchers with GivenWhenThen 
 
 		it("should receive a published message and transform it into an event") {
 
-      val ziqniTransformerTester = ZiqniTransformerTester.loadDefault()
+      val ziqniTransformerTester = ZiqniTransformerTester.loadDefaultWithSampleData()
+
 			val transformer = new ExampleTransformerImpl
 			transformer.rabbit(Array.empty, "","", ziqniTransformerTester.ziqniContextExt)
 

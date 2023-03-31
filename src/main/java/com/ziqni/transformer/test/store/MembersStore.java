@@ -1,9 +1,11 @@
 package com.ziqni.transformer.test.store;
 
 import com.github.benmanes.caffeine.cache.*;
+import com.ziqni.admin.sdk.ApiException;
 import com.ziqni.admin.sdk.model.Member;
 import com.ziqni.admin.sdk.model.MemberType;
 import com.ziqni.admin.sdk.model.Result;
+import com.ziqni.transformer.test.concurrent.ZiqniConcurrentHashMap;
 import com.ziqni.transformer.test.concurrent.ZiqniExecutors;
 import com.ziqni.transformer.test.models.BasicMember;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -21,6 +23,8 @@ public class MembersStore implements AsyncCacheLoader<@NonNull String, @NonNull 
 
     private final static AtomicInteger identifierCounter = new AtomicInteger();
 
+    private final ZiqniConcurrentHashMap<String, String> refIdCache = new ZiqniConcurrentHashMap<>();
+
     public final AsyncLoadingCache<@NonNull String, @NonNull Member> cache = Caffeine
             .newBuilder()
             .maximumSize(5_000)
@@ -33,7 +37,7 @@ public class MembersStore implements AsyncCacheLoader<@NonNull String, @NonNull 
      * Get methods
      **/
     public CompletableFuture<Optional<String>> getIdByReferenceId(String memberRefId) {
-        return null;
+        return this.refIdCache.getAsync(memberRefId);
     }
 
     public CompletableFuture<String> getRefIdByMemberId(String memberId) {
@@ -41,6 +45,12 @@ public class MembersStore implements AsyncCacheLoader<@NonNull String, @NonNull 
     }
 
     public CompletableFuture<Optional<String>> create(String memberRefId, String displayName, scala.collection.Seq<String> tagsToCreate, scala.Option<scala.collection.Map<String, String>> metaData) {
+//        final var out = new CompletableFuture<Optional<String>>();
+//        if(this.refIdCache.containsKey(memberRefId))
+//            out.completeExceptionally(new ApiException) // or whatever we throw
+//
+//        return out;
+
         return null;
     }
 
@@ -66,16 +76,19 @@ public class MembersStore implements AsyncCacheLoader<@NonNull String, @NonNull 
                 .addTagsItem("test-tag")
                 .metadata(Map.of("test-met", "test-key"))
                 .name("test-name-"+identifierCount)
-                .memberRefId("test-member-ref-id")
+                .memberRefId("test-member-ref-id"+identifierCount)
                 .memberType(MemberType.INDIVIDUAL)
                 .addTeamMembersItem("test-team-member")
-                .addConstraintsItem("test-constraint-item")
+                //.addConstraintsItem("test-constraint-item")
                 .timeZoneOffset("UTC");
     }
 
     @Override
     public CompletableFuture<? extends @NonNull Member> asyncLoad(@NonNull String key, Executor executor) throws Exception {
-       return CompletableFuture.completedFuture(makeMock());
+       return CompletableFuture.completedFuture(makeMock()).thenApply(member -> {
+           this.refIdCache.put(member.getMemberRefId(), member.getId());
+           return member;
+       });
     }
 
     @Override
