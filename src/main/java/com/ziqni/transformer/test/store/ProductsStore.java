@@ -109,7 +109,11 @@ public class ProductsStore implements AsyncCacheLoader<@NonNull String, @NonNull
     }
 
     public CompletableFuture<Optional<Result>> delete(String productId) {
-        return null;
+        removeFromCache(productId);
+        return CompletableFuture.completedFuture(Optional.of(
+                new Result()
+                .id(productId)
+                .result("DELETED")));
     }
 
     public Product makeMock(){
@@ -136,5 +140,9 @@ public class ProductsStore implements AsyncCacheLoader<@NonNull String, @NonNull
     @Override
     public void onRemoval(@Nullable @NonNull String key, @Nullable @NonNull Product value, RemovalCause cause) {
 
+    }
+
+    public void removeFromCache(String key) {
+        this.cache.put(key, CompletableFuture.completedFuture(null));
     }
 }
