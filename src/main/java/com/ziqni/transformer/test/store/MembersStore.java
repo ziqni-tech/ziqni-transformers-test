@@ -15,6 +15,7 @@ import scala.collection.JavaConverters;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -68,7 +69,36 @@ public class MembersStore implements AsyncCacheLoader<@NonNull String, @NonNull 
     }
 
     public CompletableFuture<Optional<Result>> update(String memberId, scala.Option<String> memberRefId, scala.Option<String> displayName, scala.Option<scala.collection.Seq<String>> tagsToUpdate, scala.Option<scala.collection.Map<String, String>> metaData) {
-        return null;
+        final var out = new CompletableFuture<Optional<Result>>();
+        var isNotInCache = this.cache
+                .get(memberId)
+                .thenApply(Objects::isNull)
+                .join();
+        if(isNotInCache)
+            out.completeExceptionally(new ApiException("member_with_id_[" + memberId + "]_does_not_exist")); // or whatever we throw
+        else {
+            this.cache.getIfPresent(memberId)
+                    .thenApply(x -> {
+                if (!memberRefId.isEmpty())
+                    x.memberRefId(memberRefId.get());
+                if (!displayName.isEmpty())
+                    x.name(displayName.get());
+                if (!tagsToUpdate.isEmpty())
+                    x.tags(JavaConverters.seqAsJavaList(tagsToUpdate.get()));
+                if (!metaData.isEmpty())
+                    x.metadata(JavaConverters.mapAsJavaMap(metaData.get()));
+
+                out.thenApply(y -> y.orElse(new Result()
+                        .id(x.getId())
+                        .result("UPDATED")
+                        .externalReference(x.getMemberRefId())));
+
+                return x;
+            });
+
+        }
+
+        return out;
     }
 
     public CompletableFuture<Optional<BasicMember>> findBasicMemberModelById(String memberId) {
