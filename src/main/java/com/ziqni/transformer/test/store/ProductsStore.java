@@ -18,6 +18,7 @@ import scala.collection.Seq;
 
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -27,7 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ProductsStore implements AsyncCacheLoader<@NonNull String, @NonNull Product>, RemovalListener<@NonNull String, @NonNull Product> {
 
     private final static AtomicInteger identifierCounter = new AtomicInteger();
-    private static final ZiqniConcurrentHashMap<String, String> refIdCache = new ZiqniConcurrentHashMap<>();
+    private final ZiqniConcurrentHashMap<String, String> refIdCache = new ZiqniConcurrentHashMap<>();
     public final AsyncLoadingCache<@org.checkerframework.checker.nullness.qual.NonNull String, @org.checkerframework.checker.nullness.qual.NonNull Product> cache;
 
     public ProductsStore() {
@@ -75,7 +76,36 @@ public class ProductsStore implements AsyncCacheLoader<@NonNull String, @NonNull
     }
 
     public CompletableFuture<Optional<Result>> update(String productId, Option<String> productRefId, Option<String> displayName, Option<Seq<String>> providers, Option<String> productType, Option<Double> defaultAdjustmentFactor, Option<scala.collection.Map<String, String>> metaData) {
-        return null;
+        final var out = new CompletableFuture<Optional<Result>>();
+        var isNotInCache = this.cache
+                .get(productId)
+                .thenApply(Objects::isNull)
+                .join();
+        if (isNotInCache)
+            out.completeExceptionally(new ApiException("product_with_id_[" + productId + "]_does_not_exist")); // or whatever we throw
+        else {
+            this.cache.getIfPresent(productId)
+                    .thenApply(x -> {
+                        if (!productRefId.isEmpty())
+                            x.productRefId(productRefId.get());
+                        if (!displayName.isEmpty())
+                            x.name(displayName.get());
+//                        if (!productType.isEmpty())
+//                            x.productType(productType);
+                        if (!metaData.isEmpty())
+                            x.metadata(JavaConverters.mapAsJavaMap(metaData.get()));
+
+                        out.thenApply(y -> y.orElse(new Result()
+                                .id(x.getId())
+                                .result("UPDATED")
+                                .externalReference(x.getProductRefId())));
+
+                        return x;
+                    });
+
+        }
+
+        return out;
     }
 
     public CompletableFuture<Optional<Result>> delete(String productId) {
