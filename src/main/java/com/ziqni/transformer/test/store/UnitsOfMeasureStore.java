@@ -1,6 +1,7 @@
 package com.ziqni.transformer.test.store;
 
 import com.github.benmanes.caffeine.cache.*;
+import com.ziqni.admin.sdk.ApiException;
 import com.ziqni.admin.sdk.model.Result;
 import com.ziqni.admin.sdk.model.Reward;
 import com.ziqni.admin.sdk.model.UnitOfMeasure;
@@ -12,8 +13,10 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scala.Option;
+import scala.collection.JavaConverters;
 
 import java.time.OffsetDateTime;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -46,7 +49,30 @@ public class UnitsOfMeasureStore implements AsyncCacheLoader<@NonNull String, @N
     }
 
     public CompletableFuture<Optional<Result>> create(final String key, Option<String> name, Option<String> isoCode, Double multiplier, UnitOfMeasureType unitOfMeasureType){
-        return null;
+        final var out = new CompletableFuture<Optional<Result>>();
+        var isInCache = this.cache
+                .get(key)
+                .thenApply(Objects::nonNull)
+                .join();
+        if(isInCache)
+            out.completeExceptionally(new ApiException("unit_of_measure_with_key_[" + key + "]_already_exists")); // or whatever we throw
+        else {
+            final var uom = makeMock();
+            if (!name.isEmpty()){
+                uom.name(name.get());
+            }
+            if (!isoCode.isEmpty()){
+                uom.isoCode(isoCode.get());
+            }
+            uom.multiplier(multiplier);
+            uom.unitOfMeasureType(unitOfMeasureType);
+            out.thenApply(y -> y.orElse(new Result()
+                    .id(uom.getId())
+                    .result("CREATED")
+                    .externalReference(key)));
+        }
+
+        return out;
     }
 
     public UnitOfMeasure makeMock(){
