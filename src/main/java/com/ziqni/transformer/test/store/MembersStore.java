@@ -10,8 +10,10 @@ import com.ziqni.transformer.test.concurrent.ZiqniExecutors;
 import com.ziqni.transformer.test.models.BasicMember;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import scala.collection.JavaConverters;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -45,13 +47,24 @@ public class MembersStore implements AsyncCacheLoader<@NonNull String, @NonNull 
     }
 
     public CompletableFuture<Optional<String>> create(String memberRefId, String displayName, scala.collection.Seq<String> tagsToCreate, scala.Option<scala.collection.Map<String, String>> metaData) {
-//        final var out = new CompletableFuture<Optional<String>>();
-//        if(this.refIdCache.containsKey(memberRefId))
-//            out.completeExceptionally(new ApiException) // or whatever we throw
-//
-//        return out;
+        final var out = new CompletableFuture<Optional<String>>();
+        if(this.refIdCache.containsKey(memberRefId))
+            out.completeExceptionally(new ApiException("member_ref_id_already_exists")); // or whatever we throw
+        else {
+            final var tags = JavaConverters.seqAsJavaList(tagsToCreate);
+            final var metadata = JavaConverters.mapAsJavaMap(metaData.get());
+            final var member = makeMock()
+                    .name(displayName)
+                    .memberRefId(memberRefId)
+                    .tags(tags)
+                    .metadata(metadata);
+            this.cache.put(member.getId(), CompletableFuture.completedFuture(member));
+            this.refIdCache.put(member.getMemberRefId(), member.getId());
+            out.thenApply(x -> x.orElse(member.getId()));
+        }
 
-        return null;
+        return out;
+
     }
 
     public CompletableFuture<Optional<Result>> update(String memberId, scala.Option<String> memberRefId, scala.Option<String> displayName, scala.Option<scala.collection.Seq<String>> tagsToUpdate, scala.Option<scala.collection.Map<String, String>> metaData) {
