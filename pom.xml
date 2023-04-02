@@ -9,11 +9,11 @@
     <description>ZIQNI Transformer Test</description>
     <name>ZIQNI Transformer Test</name>
     
-    <version>0.0.1</version>
+    <version>0.0.1-alpha</version>
 
     <properties>
 
-        <ziqni.transformers.version>1.0.10</ziqni.transformers.version>
+        <ziqni.transformers.version>1.0.11</ziqni.transformers.version>
         <ziqni.admin.version>1.0.12</ziqni.admin.version>
 
         <softwaremill.sttp.client.version>2.2.0</softwaremill.sttp.client.version>
