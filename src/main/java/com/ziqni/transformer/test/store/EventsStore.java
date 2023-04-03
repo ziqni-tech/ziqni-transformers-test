@@ -8,16 +8,14 @@ import com.ziqni.transformers.domain.BasicEventModel;
 import lombok.NonNull;
 import scala.Option;
 import scala.Some;
-import scala.collection.Map;
-import scala.collection.Seq;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class EventsStore implements CacheLoader<@NonNull String, EventsStore.EventTransaction> {
 
@@ -81,9 +79,15 @@ public class EventsStore implements CacheLoader<@NonNull String, EventsStore.Eve
     }
 
     public EventTransaction makeMock(){
-        final var identifierCount = identifierCounter.incrementAndGet();
         final var eventTrans = new EventTransaction();
-        eventTrans.addBasicEvent(new BasicEventModel(null, null, null, null, null, null, 2.0, null, null, null, null));
+        String memberRefId = "member-ref-" + identifierCounter;
+        AtomicReference<String> memberId = new AtomicReference<>();
+        final var createdMember = membersStore.create(memberRefId, "member-" + identifierCounter, null, null);
+        createdMember.thenAccept(y -> {
+            y.ifPresent(memberId::set);
+        });
+        var memberIdOption = new Some<>(memberId.get());
+        eventTrans.addBasicEvent(new BasicEventModel(memberIdOption, memberRefId, null, null, null, null, 2.0, null, null, null, null));
         return eventTrans;
     }
 
