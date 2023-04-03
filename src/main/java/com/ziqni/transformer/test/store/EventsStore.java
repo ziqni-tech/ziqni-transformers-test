@@ -1,9 +1,11 @@
 package com.ziqni.transformer.test.store;
 
-import com.github.benmanes.caffeine.cache.CacheLoader;
+import com.github.benmanes.caffeine.cache.*;
+import com.ziqni.admin.sdk.model.Award;
 import com.ziqni.admin.sdk.model.EntityType;
 import com.ziqni.admin.sdk.model.ModelApiResponse;
 import com.ziqni.admin.sdk.model.Result;
+import com.ziqni.transformer.test.concurrent.ZiqniExecutors;
 import com.ziqni.transformers.domain.BasicEventModel;
 import lombok.NonNull;
 import org.joda.time.DateTime;
@@ -12,14 +14,15 @@ import scala.Some;
 
 import javax.annotation.Nullable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class EventsStore implements CacheLoader<@NonNull String, EventsStore.EventTransaction> {
+public class EventsStore implements CacheLoader<@NonNull String, EventsStore.EventTransaction>, RemovalListener<@NonNull String, @NonNull EventsStore.EventTransaction> {
 
     private final static AtomicInteger identifierCounter = new AtomicInteger();
 
@@ -28,6 +31,13 @@ public class EventsStore implements CacheLoader<@NonNull String, EventsStore.Eve
     private final MembersStore membersStore;
 
     private final ActionTypesStore actionTypesStore;
+
+    public final AsyncLoadingCache<String, EventsStore.EventTransaction> cache = Caffeine
+            .newBuilder()
+            .maximumSize(10_000)
+            .expireAfterAccess(1, TimeUnit.DAYS)
+            .executor(ZiqniExecutors.GlobalZiqniCachesExecutor)
+            .evictionListener(this).buildAsync(this);
 
     @Override
     public @Nullable EventsStore.EventTransaction load(@NonNull String key) throws Exception {
@@ -61,7 +71,17 @@ public class EventsStore implements CacheLoader<@NonNull String, EventsStore.Eve
     }
 
     public CompletableFuture<List<BasicEventModel>> findByBatchId(String batchId) {
-        return null;
+        var basicEventModels = cache.asMap().values()
+                .stream()
+                .map(a -> a
+                        .join()
+                        .getEvents())
+                .filter(x -> x.stream().anyMatch(y -> !y.batchId().isEmpty() && batchId.equalsIgnoreCase(y.batchId().get())))
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+
+        return CompletableFuture.completedFuture(basicEventModels);
+
     }
 
     private void pushEvent(BasicEventModel basicEventModel, ModelApiResponse response) {
@@ -101,6 +121,12 @@ public class EventsStore implements CacheLoader<@NonNull String, EventsStore.Eve
         eventTrans.addBasicEvent(new BasicEventModel(memberIdOption, memberRefId, null, null, null, action.get(), 2.0, DateTime.now(), null, null, null));
         return eventTrans;
     }
+
+    @Override
+    public void onRemoval(@org.checkerframework.checker.nullness.qual.Nullable @NonNull String s, @org.checkerframework.checker.nullness.qual.Nullable @NonNull EventTransaction eventTransaction, RemovalCause removalCause) {
+
+    }
+
 
     public static class EventTransaction {
         private final List<BasicEventModel> buffer = new ArrayList<>();
