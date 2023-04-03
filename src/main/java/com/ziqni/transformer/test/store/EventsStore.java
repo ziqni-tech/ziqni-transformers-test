@@ -1,23 +1,39 @@
 package com.ziqni.transformer.test.store;
 
 import com.github.benmanes.caffeine.cache.CacheLoader;
+import com.ziqni.admin.sdk.model.EntityType;
 import com.ziqni.admin.sdk.model.ModelApiResponse;
 import com.ziqni.transformers.domain.BasicEventModel;
 import lombok.NonNull;
+import scala.Option;
+import scala.Some;
+import scala.collection.Map;
+import scala.collection.Seq;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class EventsStore implements CacheLoader<@NonNull String, EventsStore.EventTransaction> {
 
     private final static AtomicInteger identifierCounter = new AtomicInteger();
+
+    private ProductsStore productsStore;
+
+    private MembersStore membersStore;
+
     @Override
     public @Nullable EventsStore.EventTransaction load(@NonNull String key) throws Exception {
         return null;
+    }
+
+    public EventsStore(ProductsStore productsStore, MembersStore membersStore) {
+        this.productsStore = productsStore;
+        this.membersStore = membersStore;
     }
 
     public CompletableFuture<ModelApiResponse> pushEvent(BasicEventModel basicEventModel) {
@@ -25,6 +41,16 @@ public class EventsStore implements CacheLoader<@NonNull String, EventsStore.Eve
     }
 
     public CompletableFuture<ModelApiResponse> pushEvent(List<BasicEventModel> basicEventModels) {
+        basicEventModels.forEach(x -> {
+            if (x.action().equalsIgnoreCase(EntityType.MEMBER.getValue())){
+//                var metadata = new Some<Map<String, scala.collection.immutable.Seq<Object>>>(x.metadata());
+                CompletableFuture<Optional<String>> createdMember = membersStore.create(x.memberRefId(), "member-" + identifierCounter, x.tags(), null);
+            } else if (x.action().equalsIgnoreCase(EntityType.PRODUCT.getValue())) {
+                CompletableFuture<Optional<String>> createdProduct = productsStore.create(x.entityRefId(), "product-" + identifierCounter, null, null, null, null);
+            }
+        });
+
+
         return null;
     }
 

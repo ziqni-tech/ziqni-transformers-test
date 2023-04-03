@@ -20,7 +20,6 @@ public class ZiqniStores {
    public final UnitsOfMeasureStore unitsOfMeasureStore;
 
     public ZiqniStores(String accountId) {
-        this.eventsStore = new EventsStore();
         this.membersStore = new MembersStore();
         this.productsStore = new ProductsStore();
         this.actionTypesStore = new ActionTypesStore();
@@ -29,6 +28,7 @@ public class ZiqniStores {
         this.rewardStore = new RewardStore();
         this.awardStore = new AwardStore(rewardStore);
         this.unitsOfMeasureStore = new UnitsOfMeasureStore();
+        this.eventsStore = new EventsStore(productsStore, membersStore);
     }
 
     public void generateSampleData() {
