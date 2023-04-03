@@ -28,7 +28,7 @@ public class ZiqniStores {
         this.rewardStore = new RewardStore();
         this.awardStore = new AwardStore(rewardStore);
         this.unitsOfMeasureStore = new UnitsOfMeasureStore();
-        this.eventsStore = new EventsStore(productsStore, membersStore);
+        this.eventsStore = new EventsStore(productsStore, membersStore, actionTypesStore);
     }
 
     public void generateSampleData() {

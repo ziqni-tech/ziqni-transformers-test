@@ -6,10 +6,12 @@ import com.ziqni.admin.sdk.model.ModelApiResponse;
 import com.ziqni.admin.sdk.model.Result;
 import com.ziqni.transformers.domain.BasicEventModel;
 import lombok.NonNull;
+import org.joda.time.DateTime;
 import scala.Option;
 import scala.Some;
 
 import javax.annotation.Nullable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -25,14 +27,17 @@ public class EventsStore implements CacheLoader<@NonNull String, EventsStore.Eve
 
     private final MembersStore membersStore;
 
+    private final ActionTypesStore actionTypesStore;
+
     @Override
     public @Nullable EventsStore.EventTransaction load(@NonNull String key) throws Exception {
         return makeMock();
     }
 
-    public EventsStore(ProductsStore productsStore, MembersStore membersStore) {
+    public EventsStore(ProductsStore productsStore, MembersStore membersStore, ActionTypesStore actionTypesStore) {
         this.productsStore = productsStore;
         this.membersStore = membersStore;
+        this.actionTypesStore = actionTypesStore;
     }
 
     public CompletableFuture<ModelApiResponse> pushEvent(BasicEventModel basicEventModel) {
@@ -82,12 +87,18 @@ public class EventsStore implements CacheLoader<@NonNull String, EventsStore.Eve
         final var eventTrans = new EventTransaction();
         String memberRefId = "member-ref-" + identifierCounter;
         AtomicReference<String> memberId = new AtomicReference<>();
+        AtomicReference<String> action = new AtomicReference<>();
+        var testEventName = new Some<>("test-event" + 1);
         final var createdMember = membersStore.create(memberRefId, "member-" + identifierCounter, null, null);
         createdMember.thenAccept(y -> {
             y.ifPresent(memberId::set);
         });
+        final var createdActionType = actionTypesStore.create("test-event", testEventName, null, null);
+        createdActionType.thenAccept(y -> {
+            y.ifPresent(z -> action.set(z.getExternalReference()));
+        });
         var memberIdOption = new Some<>(memberId.get());
-        eventTrans.addBasicEvent(new BasicEventModel(memberIdOption, memberRefId, null, null, null, null, 2.0, null, null, null, null));
+        eventTrans.addBasicEvent(new BasicEventModel(memberIdOption, memberRefId, null, null, null, action.get(), 2.0, DateTime.now(), null, null, null));
         return eventTrans;
     }
 
