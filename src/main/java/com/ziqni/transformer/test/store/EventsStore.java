@@ -23,9 +23,9 @@ public class EventsStore implements CacheLoader<@NonNull String, EventsStore.Eve
 
     private final static AtomicInteger identifierCounter = new AtomicInteger();
 
-    private ProductsStore productsStore;
+    private final ProductsStore productsStore;
 
-    private MembersStore membersStore;
+    private final MembersStore membersStore;
 
     @Override
     public @Nullable EventsStore.EventTransaction load(@NonNull String key) throws Exception {
