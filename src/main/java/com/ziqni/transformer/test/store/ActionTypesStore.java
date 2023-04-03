@@ -1,10 +1,12 @@
 package com.ziqni.transformer.test.store;
 
 import com.github.benmanes.caffeine.cache.*;
+import com.ziqni.admin.sdk.ApiException;
 import com.ziqni.admin.sdk.model.*;
 import com.ziqni.transformer.test.concurrent.ZiqniExecutors;
 import lombok.NonNull;
 import scala.Option;
+import scala.collection.JavaConverters;
 
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
@@ -33,11 +35,49 @@ public class ActionTypesStore implements AsyncCacheLoader<@NonNull String, Actio
     }
 
     public CompletableFuture<Optional<Result>> create(final String action, Option<String> name, Option<scala.collection.Map<String, String>> metaData, String unitOfMeasureKey) {
-        return null;
+        final var out = new CompletableFuture<Optional<Result>>();
+        var isInCache = this.cache
+                .get(action)
+                .thenApply(Objects::nonNull)
+                .join();
+        if(isInCache)
+            out.completeExceptionally(new ApiException("action_type_with_action_[" + action + "]_already_exists")); // or whatever we throw
+        else {
+            final var actionTypeEntry = makeMock();
+            if (!name.isEmpty()){
+                actionTypeEntry.setName(name.get());
+            }
+
+            out.thenApply(y -> y.orElse(new Result()
+                    .id(actionTypeEntry.getId())
+                    .result("CREATED")
+                    .externalReference(actionTypeEntry.getKey())));
+        }
+
+        return out;
     }
 
     public CompletableFuture<ModelApiResponse> update(String action, Option<String> name, Option<scala.collection.Map<String, String>> metaData, Option<String> unitOfMeasureType) {
-        return null;
+        final var out = new CompletableFuture<ModelApiResponse>();
+        var isNotInCache = this.cache
+                .get(action)
+                .thenApply(Objects::isNull)
+                .join();
+        if(isNotInCache)
+            out.completeExceptionally(new ApiException("action_type_with_action_[" + action + "]_does_not_exist")); // or whatever we throw
+        else {
+            final var actionTypeEntry = makeMock();
+            if (!name.isEmpty()){
+                actionTypeEntry.setName(name.get());
+            }
+
+            out.thenApply(y -> new Result()
+                    .id(actionTypeEntry.getId())
+                    .result("UPDATED")
+                    .externalReference(actionTypeEntry.getKey()));
+        }
+
+        return out;
     }
 
     @Override
@@ -56,7 +96,7 @@ public class ActionTypesStore implements AsyncCacheLoader<@NonNull String, Actio
     }
 
     public static class ActionTypeEntry {
-        public final String key;
+        public String key;
         public String id;
         public String name;
 
@@ -84,6 +124,22 @@ public class ActionTypesStore implements AsyncCacheLoader<@NonNull String, Actio
         public ActionTypeEntry setName(String name) {
             this.name = name;
             return this;
+        }
+
+        public void setKey(String key) {
+            this.key = key;
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
         }
 
         @Override
