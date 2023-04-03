@@ -47,7 +47,7 @@ public class ActionTypesStore implements AsyncCacheLoader<@NonNull String, Actio
             if (!name.isEmpty()){
                 actionTypeEntry.setName(name.get());
             }
-
+            this.cache.put(actionTypeEntry.getId(), CompletableFuture.completedFuture(actionTypeEntry));
             out.thenApply(y -> y.orElse(new Result()
                     .id(actionTypeEntry.getId())
                     .result("CREATED")
@@ -70,7 +70,7 @@ public class ActionTypesStore implements AsyncCacheLoader<@NonNull String, Actio
             if (!name.isEmpty()){
                 actionTypeEntry.setName(name.get());
             }
-
+            this.cache.put(actionTypeEntry.getId(), CompletableFuture.completedFuture(actionTypeEntry));
             out.thenApply(y -> new Result()
                     .id(actionTypeEntry.getId())
                     .result("UPDATED")
