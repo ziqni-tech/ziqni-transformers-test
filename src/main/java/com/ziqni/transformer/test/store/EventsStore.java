@@ -29,7 +29,7 @@ public class EventsStore implements CacheLoader<@NonNull String, EventsStore.Eve
 
     @Override
     public @Nullable EventsStore.EventTransaction load(@NonNull String key) throws Exception {
-        return null;
+        return makeMock();
     }
 
     public EventsStore(ProductsStore productsStore, MembersStore membersStore) {
