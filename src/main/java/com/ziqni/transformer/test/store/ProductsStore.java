@@ -42,7 +42,7 @@ public class ProductsStore implements AsyncCacheLoader<@NonNull String, @NonNull
     }
 
     public CompletableFuture<Optional<String>> getIdByReferenceId(String productRefId) {
-        return null;
+        return cache.get(productRefId).thenApply(x -> Optional.of(x.getProductRefId()));
     }
 
     public CompletableFuture<String> getRefIdByProductId(String productId) {

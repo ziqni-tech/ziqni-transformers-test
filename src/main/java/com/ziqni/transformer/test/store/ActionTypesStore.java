@@ -23,12 +23,13 @@ public class ActionTypesStore implements AsyncCacheLoader<@NonNull String, Actio
 
     private final static AtomicInteger identifierCounter = new AtomicInteger();
 
-    public final AsyncLoadingCache<String, ActionTypeEntry> cache = Caffeine
+    public final AsyncLoadingCache<@NonNull String, @NonNull ActionTypeEntry> cache = Caffeine
             .newBuilder()
             .maximumSize(10_000)
             .expireAfterAccess(1, TimeUnit.DAYS)
             .executor(ZiqniExecutors.GlobalZiqniCachesExecutor)
-            .evictionListener(this).buildAsync(this);
+            .evictionListener(this)
+            .buildAsync(this);
 
     public CompletableFuture<Boolean> actionTypeExists(String action) {
         return CompletableFuture.completedFuture(Objects.nonNull(this.cache.getIfPresent(action)));

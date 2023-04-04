@@ -49,5 +49,8 @@ class ActionTypesStoreTest {
 
     @Test
     void makeMock() {
+        final var actionTypeEntry = actionTypesStore.makeMock();
+        assertNotNull(actionTypeEntry);
+        assertNotNull(actionTypeEntry.getName());
     }
 }

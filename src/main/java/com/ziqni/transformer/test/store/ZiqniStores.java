@@ -4,6 +4,9 @@ import com.ziqni.admin.sdk.model.CompetitionStatus;
 import com.ziqni.admin.sdk.model.Contest;
 import com.ziqni.admin.sdk.model.ContestStatus;
 
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+
 public class ZiqniStores {
 
     public final EventsStore eventsStore;
@@ -40,7 +43,7 @@ public class ZiqniStores {
             unitsOfMeasureStore.getUnitOfMeasure("uom-" + x);
             rewardStore.getReward("reward-" + x);
             awardStore.getAward("award-" + x);
-            actionTypesStore.findActionTypeByAction("action-" + x);
+            CompletableFuture<Optional<ActionTypesStore.ActionTypeEntry>> actionTypeByAction = actionTypesStore.findActionTypeByAction("action-" + x);
         }
         generateActiveContsWithDifferentCompStatuses();
         generateActiveCompsWithDifferentContStatuses();
