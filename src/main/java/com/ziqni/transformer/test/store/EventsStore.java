@@ -1,7 +1,6 @@
 package com.ziqni.transformer.test.store;
 
 import com.github.benmanes.caffeine.cache.*;
-import com.ziqni.admin.sdk.model.Award;
 import com.ziqni.admin.sdk.model.EntityType;
 import com.ziqni.admin.sdk.model.ModelApiResponse;
 import com.ziqni.admin.sdk.model.Result;
@@ -9,18 +8,15 @@ import com.ziqni.transformer.test.concurrent.ZiqniExecutors;
 import com.ziqni.transformers.domain.BasicEventModel;
 import lombok.NonNull;
 import org.joda.time.DateTime;
-import scala.Option;
 import scala.Some;
 
 import javax.annotation.Nullable;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class EventsStore implements CacheLoader<@NonNull String, EventsStore.EventTransaction>, RemovalListener<@NonNull String, EventsStore.EventTransaction> {
 
@@ -123,7 +119,7 @@ public class EventsStore implements CacheLoader<@NonNull String, EventsStore.Eve
     }
 
     @Override
-    public void onRemoval(@org.checkerframework.checker.nullness.qual.Nullable @NonNull String s, @org.checkerframework.checker.nullness.qual.Nullable @NonNull EventTransaction eventTransaction, RemovalCause removalCause) {
+    public void onRemoval(@NonNull String s, @NonNull EventTransaction eventTransaction, RemovalCause removalCause) {
 
     }
 
