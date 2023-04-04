@@ -4,6 +4,7 @@ import com.github.benmanes.caffeine.cache.*;
 import com.ziqni.admin.sdk.model.EntityType;
 import com.ziqni.admin.sdk.model.ModelApiResponse;
 import com.ziqni.admin.sdk.model.Result;
+import com.ziqni.transformer.test.concurrent.ZiqniConcurrentHashMap;
 import com.ziqni.transformer.test.concurrent.ZiqniExecutors;
 import com.ziqni.transformers.domain.BasicEventModel;
 import lombok.NonNull;
@@ -34,6 +35,8 @@ public class EventsStore implements CacheLoader<@NonNull String, EventsStore.Eve
             .expireAfterAccess(1, TimeUnit.DAYS)
             .executor(ZiqniExecutors.GlobalZiqniCachesExecutor)
             .evictionListener(this).buildAsync(this);
+
+    private final ZiqniConcurrentHashMap<String, List<BasicEventModel>> batchIdCache = new ZiqniConcurrentHashMap<>();
 
     @Override
     public @Nullable EventsStore.EventTransaction load(@NonNull String key) throws Exception {
@@ -67,16 +70,7 @@ public class EventsStore implements CacheLoader<@NonNull String, EventsStore.Eve
     }
 
     public CompletableFuture<List<BasicEventModel>> findByBatchId(String batchId) {
-        var basicEventModels = cache.asMap().values()
-                .stream()
-                .map(a -> a
-                        .join()
-                        .getEvents())
-                .filter(x -> x.stream().anyMatch(y -> !y.batchId().isEmpty() && batchId.equalsIgnoreCase(y.batchId().get())))
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
-
-        return CompletableFuture.completedFuture(basicEventModels);
+        return CompletableFuture.completedFuture(batchIdCache.get(batchId));
 
     }
 
@@ -97,6 +91,10 @@ public class EventsStore implements CacheLoader<@NonNull String, EventsStore.Eve
                 });
             });
         }
+
+        final var eventTransaction = new EventTransaction();
+        eventTransaction.addBasicEvent(basicEventModel);
+        this.cache.put(basicEventModel.eventRefId(), CompletableFuture.completedFuture(eventTransaction));
     }
 
     public EventTransaction makeMock(){
@@ -113,8 +111,9 @@ public class EventsStore implements CacheLoader<@NonNull String, EventsStore.Eve
         createdActionType.thenAccept(y -> {
             y.ifPresent(z -> action.set(z.getExternalReference()));
         });
-        var memberIdOption = new Some<>(memberId.get());
-        eventTrans.addBasicEvent(new BasicEventModel(memberIdOption, memberRefId, null, null, null, action.get(), 2.0, DateTime.now(), null, null, null));
+        String batchId = "batch-" + identifierCounter;
+        eventTrans.addBasicEvent(new BasicEventModel(new Some<>(memberId.get()), memberRefId, null, "event-ref-id" + identifierCounter, new Some<>(batchId), action.get(), 2.0, DateTime.now(), null, null, null));
+        this.batchIdCache.put(batchId, eventTrans.getEvents());
         return eventTrans;
     }
 
