@@ -65,7 +65,6 @@
             <version>${softwaremill.sttp.client.version}</version>
         </dependency>
 
-        <!-- json4s dependencies -->
         <dependency>
             <groupId>org.json4s</groupId>
             <artifactId>json4s-ext_2.13</artifactId>
@@ -81,6 +80,7 @@
             <artifactId>json4s-jackson_2.13</artifactId>
             <version>${scala.json4s.version}</version>
         </dependency>
+
         <dependency>
             <groupId>com.ziqni</groupId>
             <artifactId>ziqni-admin-sdk</artifactId>

@@ -1,6 +1,5 @@
 package com.ziqni.transformer.test.api
 
-import com.typesafe.scalalogging.LazyLogging
 import com.ziqni.admin.sdk.model.Space
 import com.ziqni.transformer.test.models._
 import com.ziqni.transformer.test.store.ZiqniStores
@@ -13,19 +12,12 @@ import scala.concurrent.Future
 import scala.jdk.CollectionConverters.SeqHasAsJava
 import scala.jdk.FutureConverters.CompletionStageOps
 
-import com.typesafe.scalalogging.LazyLogging
-import com.ziqni.admin.sdk.model.{Space, UnitOfMeasureType}
-import com.ziqni.transformers.domain._
-
-import java.util.concurrent.ConcurrentHashMap
-import scala.collection.concurrent.TrieMap
-import scala.concurrent.Future
-import scala.jdk.CollectionConverters.{ListHasAsScala, SeqHasAsJava}
-import scala.jdk.FutureConverters._
+import com.ziqni.admin.sdk.model.UnitOfMeasureType
+import scala.jdk.CollectionConverters.ListHasAsScala
 import scala.jdk.OptionConverters.RichOptional
 import scala.language.implicitConversions
 
-final case class ZiqniApiAsyncClient(ziqniStores: ZiqniStores, masterAccount: Option[Space], accountId: AccountId, spaceName: SpaceName, _subAccounts: TrieMap[SpaceName, ZiqniApi], actions: ConcurrentHashMap[String, Seq[String]]) extends ZiqniApiAsync with LazyLogging {
+final case class ZiqniApiAsyncClient(ziqniStores: ZiqniStores, masterAccount: Option[Space], accountId: AccountId, spaceName: SpaceName, _subAccounts: TrieMap[SpaceName, ZiqniApi], actions: ConcurrentHashMap[String, Seq[String]]) extends ZiqniApiAsync {
 	assert(accountId != null)
 
 	implicit private def stringToOption(s: String): Option[String] = Option(s)

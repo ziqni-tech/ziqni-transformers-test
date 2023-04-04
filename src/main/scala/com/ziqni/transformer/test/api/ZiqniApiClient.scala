@@ -1,6 +1,5 @@
 package com.ziqni.transformer.test.api
 
-import com.typesafe.scalalogging.LazyLogging
 import com.ziqni.admin.sdk.model.Space
 import com.ziqni.admin.sdk.util.TimeBasedUUIDGenerator
 import com.ziqni.transformer.test.models.{AccountId, MemberId, ProductRefId}
@@ -31,7 +30,7 @@ object ZiqniApiClient {
 	def nextId: String = ZiqniApiClient.timeBasedUUIDGenerator.getBase64UUID
 }
 
-final case class ZiqniApiClient(async:ZiqniApiAsyncClient, masterAccount: Option[Space], accountId: AccountId, spaceName: SpaceName, _subAccounts: TrieMap[SpaceName, ZiqniApi], actions: ConcurrentHashMap[String, Seq[String]]) extends ZiqniApi with LazyLogging {
+final case class ZiqniApiClient(async:ZiqniApiAsyncClient, masterAccount: Option[Space], accountId: AccountId, spaceName: SpaceName, _subAccounts: TrieMap[SpaceName, ZiqniApi], actions: ConcurrentHashMap[String, Seq[String]]) extends ZiqniApi {
 	assert(accountId != null)
 
 	implicit private def stringToOption(s: String): Option[String] = Option(s)
