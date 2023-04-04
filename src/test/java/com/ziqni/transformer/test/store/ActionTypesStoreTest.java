@@ -48,6 +48,15 @@ class ActionTypesStoreTest {
     }
 
     @Test
+    void findActionTypeById() throws ExecutionException, InterruptedException {
+        final var actionTypeByAction = actionTypesStore.findActionTypeByAction("action-1");
+        assertNotNull(actionTypeByAction);
+        assertNotNull(actionTypeByAction.get());
+        assertNotNull(actionTypeByAction.get().get());
+        assertNotNull(actionTypeByAction.get().get().getName());
+    }
+
+    @Test
     void makeMock() {
         final var actionTypeEntry = actionTypesStore.makeMock();
         assertNotNull(actionTypeEntry);
