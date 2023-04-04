@@ -31,15 +31,17 @@ public class ActionTypesStore implements AsyncCacheLoader<@NonNull String, Actio
             .evictionListener(this).buildAsync(this);
 
     public CompletableFuture<Boolean> actionTypeExists(String action) {
-        return Objects.requireNonNull(this.cache.getIfPresent(action)).thenApply(Objects::nonNull);
+        return CompletableFuture.completedFuture(Objects.nonNull(this.cache.getIfPresent(action)));
+    }
+
+    public CompletableFuture<Optional<ActionTypesStore.ActionTypeEntry>> findActionTypeByAction(String action) {
+        return cache.get(action).thenApply(Optional::ofNullable);
     }
 
     public CompletableFuture<Optional<Result>> create(final String action, Option<String> name, Option<scala.collection.Map<String, String>> metaData, String unitOfMeasureKey) {
         final var out = new CompletableFuture<Optional<Result>>();
-        var isInCache = this.cache
-                .get(action)
-                .thenApply(Objects::nonNull)
-                .join();
+        var isInCache = Objects.nonNull(this.cache.getIfPresent(action));
+
         if(isInCache)
             out.completeExceptionally(new ApiException("action_type_with_action_[" + action + "]_already_exists")); // or whatever we throw
         else {
@@ -47,8 +49,9 @@ public class ActionTypesStore implements AsyncCacheLoader<@NonNull String, Actio
             if (!name.isEmpty()){
                 actionTypeEntry.setName(name.get());
             }
+            actionTypeEntry.setKey(action);
             this.cache.put(actionTypeEntry.getId(), CompletableFuture.completedFuture(actionTypeEntry));
-            out.thenApply(y -> y.orElse(new Result()
+            out.complete(Optional.of(new Result()
                     .id(actionTypeEntry.getId())
                     .result("CREATED")
                     .externalReference(actionTypeEntry.getKey())));
@@ -59,10 +62,7 @@ public class ActionTypesStore implements AsyncCacheLoader<@NonNull String, Actio
 
     public CompletableFuture<ModelApiResponse> update(String action, Option<String> name, Option<scala.collection.Map<String, String>> metaData, Option<String> unitOfMeasureType) {
         final var out = new CompletableFuture<ModelApiResponse>();
-        var isNotInCache = this.cache
-                .get(action)
-                .thenApply(Objects::isNull)
-                .join();
+        var isNotInCache = Objects.isNull(this.cache.getIfPresent(action));
         if(isNotInCache)
             out.completeExceptionally(new ApiException("action_type_with_action_[" + action + "]_does_not_exist")); // or whatever we throw
         else {
@@ -71,10 +71,11 @@ public class ActionTypesStore implements AsyncCacheLoader<@NonNull String, Actio
                 actionTypeEntry.setName(name.get());
             }
             this.cache.put(actionTypeEntry.getId(), CompletableFuture.completedFuture(actionTypeEntry));
-            out.thenApply(y -> new Result()
+            out.complete(new ModelApiResponse()
+                    .addResultsItem(new Result()
                     .id(actionTypeEntry.getId())
                     .result("UPDATED")
-                    .externalReference(actionTypeEntry.getKey()));
+                    .externalReference(actionTypeEntry.getKey())));
         }
 
         return out;

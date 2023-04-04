@@ -40,6 +40,7 @@ public class ZiqniStores {
             unitsOfMeasureStore.getUnitOfMeasure("uom-" + x);
             rewardStore.getReward("reward-" + x);
             awardStore.getAward("award-" + x);
+            actionTypesStore.findActionTypeByAction("action-" + x);
         }
         generateActiveContsWithDifferentCompStatuses();
         generateActiveCompsWithDifferentContStatuses();
