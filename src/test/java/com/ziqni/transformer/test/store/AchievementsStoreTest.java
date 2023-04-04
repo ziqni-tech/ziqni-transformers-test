@@ -21,6 +21,8 @@ class AchievementsStoreTest {
         ziqniStores.generateSampleData();
     }
 
+
+
     @Test
     void getAchievement() throws ExecutionException, InterruptedException {
         final var achievement = achievementsStore.getAchievement("ach-1");

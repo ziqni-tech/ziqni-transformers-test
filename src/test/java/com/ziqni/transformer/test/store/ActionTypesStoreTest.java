@@ -1,6 +1,6 @@
 package com.ziqni.transformer.test.store;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import scala.Some;
 
 import java.util.concurrent.ExecutionException;
@@ -14,7 +14,7 @@ class ActionTypesStoreTest {
     public ActionTypesStoreTest() {
         String accountId = "test-account";
         this.actionTypesStore = new ActionTypesStore();
-        ZiqniStores ziqniStores = new ZiqniStores(accountId);
+        final var ziqniStores = new ZiqniStores(accountId);
         ziqniStores.generateSampleData();
     }
 
