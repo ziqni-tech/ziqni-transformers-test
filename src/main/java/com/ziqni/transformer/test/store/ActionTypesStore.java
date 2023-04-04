@@ -31,7 +31,7 @@ public class ActionTypesStore implements AsyncCacheLoader<@NonNull String, Actio
             .evictionListener(this).buildAsync(this);
 
     public CompletableFuture<Boolean> actionTypeExists(String action) {
-        return null;
+        return Objects.requireNonNull(this.cache.getIfPresent(action)).thenApply(Objects::nonNull);
     }
 
     public CompletableFuture<Optional<Result>> create(final String action, Option<String> name, Option<scala.collection.Map<String, String>> metaData, String unitOfMeasureKey) {
