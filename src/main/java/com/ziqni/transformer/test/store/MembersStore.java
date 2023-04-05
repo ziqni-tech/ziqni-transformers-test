@@ -13,10 +13,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import scala.collection.JavaConverters;
 
 import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
@@ -52,8 +49,8 @@ public class MembersStore implements AsyncCacheLoader<@NonNull String, @NonNull 
         if(this.refIdCache.containsKey(memberRefId))
             out.completeExceptionally(new ApiException("member_ref_id_already_exists")); // or whatever we throw
         else {
-            final var tags = JavaConverters.seqAsJavaList(tagsToCreate);
-            final var metadata = JavaConverters.mapAsJavaMap(metaData.get());
+            final var tags = Objects.nonNull(tagsToCreate) && !tagsToCreate.isEmpty() ? JavaConverters.seqAsJavaList(tagsToCreate) : new ArrayList<String>();
+            final var metadata = Objects.nonNull(metaData) && !metaData.isEmpty() ? JavaConverters.mapAsJavaMap(metaData.get()) : new HashMap<String, String>();
             final var member = makeMock()
                     .name(displayName)
                     .memberRefId(memberRefId)
@@ -62,6 +59,7 @@ public class MembersStore implements AsyncCacheLoader<@NonNull String, @NonNull 
             this.cache.put(member.getId(), CompletableFuture.completedFuture(member));
             this.refIdCache.put(member.getMemberRefId(), member.getId());
             out.thenApply(x -> x.orElse(member.getId()));
+            out.complete(Optional.of(member.getId()));
         }
 
         return out;
@@ -70,10 +68,7 @@ public class MembersStore implements AsyncCacheLoader<@NonNull String, @NonNull 
 
     public CompletableFuture<Optional<Result>> update(String memberId, scala.Option<String> memberRefId, scala.Option<String> displayName, scala.Option<scala.collection.Seq<String>> tagsToUpdate, scala.Option<scala.collection.Map<String, String>> metaData) {
         final var out = new CompletableFuture<Optional<Result>>();
-        var isNotInCache = this.cache
-                .get(memberId)
-                .thenApply(Objects::isNull)
-                .join();
+        var isNotInCache = Objects.isNull(this.cache.getIfPresent(memberId));
         if(isNotInCache)
             out.completeExceptionally(new ApiException("member_with_id_[" + memberId + "]_does_not_exist")); // or whatever we throw
         else {
@@ -88,7 +83,7 @@ public class MembersStore implements AsyncCacheLoader<@NonNull String, @NonNull 
                 if (!metaData.isEmpty())
                     x.metadata(JavaConverters.mapAsJavaMap(metaData.get()));
 
-                out.thenApply(y -> y.orElse(new Result()
+                out.complete(Optional.of(new Result()
                         .id(x.getId())
                         .result("UPDATED")
                         .externalReference(x.getMemberRefId())));

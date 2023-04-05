@@ -42,12 +42,12 @@ class ActionTypesStoreTest {
     @Test
     void update() throws ExecutionException, InterruptedException {
         String action = "test-action-MMMT";
-        final var actionType = actionTypesStore.create(action, new Some<>("test-action-11621628"), null, "test-unit-of-measure-11");
+        final var actionType = actionTypesStore.update(action, new Some<>("test-action-11621628"), null, null);
         actionType.join();
         assertNotNull(actionType);
         assertNotNull(actionType.get());
-        assertNotNull(actionType.get().get());
-        assertEquals(actionType.get().get().getExternalReference(), action);
+        assertNotNull(actionType.get());
+        assertEquals(actionType.get().getResults().size(), 1);
     }
 
     @Test
