@@ -39,7 +39,7 @@ class MembersStoreTest {
 
     @Test
     void create() throws ExecutionException, InterruptedException {
-        final var member = membersStore.create("test-member-ref-id-1", "test-member", null, Option.empty());
+        final var member = membersStore.create("test-member-ref-id-1", "test-member", null, null);
         member.join();
         assertNotNull(member);
         assertNotNull(member.get());
