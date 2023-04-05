@@ -26,6 +26,7 @@ class AchievementsStoreTest {
     @Test
     void getAchievement() throws ExecutionException, InterruptedException {
         final var achievement = achievementsStore.getAchievement("ach-1");
+        achievement.join();
         assertNotNull(achievement);
         assertNotNull(achievement.get());
         assertNotNull(achievement.get().get());
@@ -36,6 +37,7 @@ class AchievementsStoreTest {
     @Test
     void findAchievementById() throws ExecutionException, InterruptedException {
         final var achievement = achievementsStore.findAchievementById("ach-1");
+        achievement.join();
         assertNotNull(achievement);
         assertNotNull(achievement.get());
         assertNotNull(achievement.get().get());

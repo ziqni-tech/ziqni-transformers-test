@@ -22,6 +22,7 @@ class ActionTypesStoreTest {
     @Test
     void actionTypeExists() throws ExecutionException, InterruptedException {
         final var actionType = actionTypesStore.actionTypeExists("action-1");
+        actionType.join();
         assertNotNull(actionType);
         assertNotNull(actionType.get());
         assertTrue(actionType.get());
@@ -31,6 +32,7 @@ class ActionTypesStoreTest {
     void create() throws ExecutionException, InterruptedException {
         String action = "test-action-MMMT";
         final var actionType = actionTypesStore.create(action, new Some<>("test-action-11621628"), null, "test-unit-of-measure-11");
+        actionType.join();
         assertNotNull(actionType);
         assertNotNull(actionType.get());
         assertNotNull(actionType.get().get());
@@ -41,6 +43,7 @@ class ActionTypesStoreTest {
     void update() throws ExecutionException, InterruptedException {
         String action = "test-action-MMMT";
         final var actionType = actionTypesStore.create(action, new Some<>("test-action-11621628"), null, "test-unit-of-measure-11");
+        actionType.join();
         assertNotNull(actionType);
         assertNotNull(actionType.get());
         assertNotNull(actionType.get().get());
@@ -50,7 +53,7 @@ class ActionTypesStoreTest {
     @Test
     void findActionTypeById() throws ExecutionException, InterruptedException {
         final var actionTypeByAction = actionTypesStore.findActionTypeByAction("action-1");
-        assertNotNull(actionTypeByAction);
+        actionTypeByAction.join();
         assertNotNull(actionTypeByAction.get());
         assertNotNull(actionTypeByAction.get().get());
         assertNotNull(actionTypeByAction.get().get().getName());

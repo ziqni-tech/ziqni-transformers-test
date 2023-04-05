@@ -23,6 +23,7 @@ class ContestsStoreTest {
     @Test
     void getBasicContestModel() throws ExecutionException, InterruptedException {
         final var contestModel = contestsStore.getBasicContestModel("cont-1");
+        contestModel.join();
         assertNotNull(contestModel);
         assertNotNull(contestModel.get());
         assertNotNull(contestModel.get().get());
@@ -32,6 +33,7 @@ class ContestsStoreTest {
     @Test
     void getContest() throws ExecutionException, InterruptedException {
         final var contestModel = contestsStore.getContest("cont-1");
+        contestModel.join();
         assertNotNull(contestModel);
         assertNotNull(contestModel.get());
         assertNotNull(contestModel.get().get());
@@ -44,6 +46,7 @@ class ContestsStoreTest {
         contestsStore.put(new Contest().id(contestId).name("testName"));
 
         final var contestModel = contestsStore.getBasicContestModel(contestId);
+        contestModel.join();
         assertNotNull(contestModel);
         assertNotNull(contestModel.get());
         assertNotNull(contestModel.get().get());

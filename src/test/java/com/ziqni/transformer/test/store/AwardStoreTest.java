@@ -21,6 +21,7 @@ class AwardStoreTest {
     @Test
     void getBasicAward() throws ExecutionException, InterruptedException {
         final var actionTypeByAction = awardStore.getBasicAward("award-1");
+        actionTypeByAction.join();
         assertNotNull(actionTypeByAction);
         assertNotNull(actionTypeByAction.get());
         assertNotNull(actionTypeByAction.get().get());
@@ -30,6 +31,7 @@ class AwardStoreTest {
     @Test
     void getAward() throws ExecutionException, InterruptedException {
         final var actionTypeByAction = awardStore.getAward("award-1");
+        actionTypeByAction.join();
         assertNotNull(actionTypeByAction);
         assertNotNull(actionTypeByAction.get());
         assertNotNull(actionTypeByAction.get().get());
