@@ -43,6 +43,7 @@ public class ZiqniStores {
             unitsOfMeasureStore.getUnitOfMeasure("uom-" + x);
             rewardStore.getReward("reward-" + x);
             awardStore.getAward("award-" + x);
+            actionTypesStore.findActionTypeByAction("actionType-" + x);
             CompletableFuture<Optional<ActionTypesStore.ActionTypeEntry>> actionTypeByAction = actionTypesStore.findActionTypeByAction("action-" + x);
         }
         generateActiveContsWithDifferentCompStatuses();

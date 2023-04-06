@@ -19,6 +19,9 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * The key to this cache is the action type key
+ */
 public class ActionTypesStore implements AsyncCacheLoader<@NonNull String, ActionTypesStore.ActionTypeEntry>, RemovalListener<@NonNull String, ActionTypesStore.ActionTypeEntry> {
 
     private final static AtomicInteger identifierCounter = new AtomicInteger();
@@ -46,12 +49,12 @@ public class ActionTypesStore implements AsyncCacheLoader<@NonNull String, Actio
         if(isInCache)
             out.completeExceptionally(new ApiException("action_type_with_action_[" + action + "]_already_exists")); // or whatever we throw
         else {
-            final var actionTypeEntry = makeMock();
+            final var actionTypeEntry = makeMock(action);
             if (!name.isEmpty()){
                 actionTypeEntry.setName(name.get());
             }
             actionTypeEntry.setKey(action);
-            this.cache.put(actionTypeEntry.getId(), CompletableFuture.completedFuture(actionTypeEntry));
+            this.cache.put(actionTypeEntry.getKey(), CompletableFuture.completedFuture(actionTypeEntry));
             out.complete(Optional.of(new Result()
                     .id(actionTypeEntry.getId())
                     .result("CREATED")
@@ -63,15 +66,16 @@ public class ActionTypesStore implements AsyncCacheLoader<@NonNull String, Actio
 
     public CompletableFuture<ModelApiResponse> update(String action, Option<String> name, Option<scala.collection.Map<String, String>> metaData, Option<String> unitOfMeasureType) {
         final var out = new CompletableFuture<ModelApiResponse>();
-        var isNotInCache = Objects.isNull(this.cache.getIfPresent(action));
+        var look = this.cache.getIfPresent(action);
+        var isNotInCache = Objects.nonNull(look) && look.join().getKey().equals(action);
         if(isNotInCache)
             out.completeExceptionally(new ApiException("action_type_with_action_[" + action + "]_does_not_exist")); // or whatever we throw
         else {
-            final var actionTypeEntry = makeMock();
+            final var actionTypeEntry = makeMock(action);
             if (!name.isEmpty()){
                 actionTypeEntry.setName(name.get());
             }
-            this.cache.put(actionTypeEntry.getId(), CompletableFuture.completedFuture(actionTypeEntry));
+            this.cache.put(actionTypeEntry.getKey(), CompletableFuture.completedFuture(actionTypeEntry));
             out.complete(new ModelApiResponse()
                     .addResultsItem(new Result()
                     .id(actionTypeEntry.getId())
@@ -84,7 +88,7 @@ public class ActionTypesStore implements AsyncCacheLoader<@NonNull String, Actio
 
     @Override
     public CompletableFuture<? extends ActionTypesStore.ActionTypeEntry> asyncLoad(@NonNull String key, Executor executor) throws Exception {
-        return CompletableFuture.completedFuture(makeMock());
+        return CompletableFuture.completedFuture(makeMock(key));
     }
 
     @Override
@@ -92,9 +96,9 @@ public class ActionTypesStore implements AsyncCacheLoader<@NonNull String, Actio
 
     }
 
-    public ActionTypeEntry makeMock(){
+    public ActionTypeEntry makeMock(String key){
         final var identifierCount = identifierCounter.incrementAndGet();
-        return new ActionTypeEntry("action-key" + identifierCount, "actiontyp-" + identifierCount, "TestActionName-" + identifierCount);
+        return new ActionTypeEntry(Objects.isNull(key) ? "action-key" + identifierCount : key, "actiontyp-" + identifierCount, "TestActionName-" + identifierCount);
     }
 
     public static class ActionTypeEntry {

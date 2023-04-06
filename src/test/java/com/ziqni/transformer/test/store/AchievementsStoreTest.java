@@ -16,9 +16,9 @@ class AchievementsStoreTest {
 
     public AchievementsStoreTest() {
         String accountId = "test-account";
-        this.achievementsStore = new AchievementsStore(accountId);
-        ZiqniStores ziqniStores = new ZiqniStores(accountId);
+        var ziqniStores = new ZiqniStores(accountId);
         ziqniStores.generateSampleData();
+        this.achievementsStore = ziqniStores.achievementsStore;
     }
 
 

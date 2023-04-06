@@ -21,9 +21,9 @@ class UnitsOfMeasureStoreTest {
 
     public UnitsOfMeasureStoreTest() {
         final var accountId = "test-account";
-        this.unitsOfMeasureStore = new UnitsOfMeasureStore();
-        final var ziqniStores = new ZiqniStores(accountId);
+        var ziqniStores = new ZiqniStores(accountId);
         ziqniStores.generateSampleData();
+        this.unitsOfMeasureStore = ziqniStores.unitsOfMeasureStore;
     }
 
     @Test

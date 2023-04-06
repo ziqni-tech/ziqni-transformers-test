@@ -15,14 +15,15 @@ class ActionTypesStoreTest {
 
     public ActionTypesStoreTest() {
         String accountId = "test-account";
-        this.actionTypesStore = new ActionTypesStore();
-        final var ziqniStores = new ZiqniStores(accountId);
+        var ziqniStores = new ZiqniStores(accountId);
         ziqniStores.generateSampleData();
+        this.actionTypesStore = ziqniStores.actionTypesStore;
     }
 
 
     @Test
     void actionTypeExists() throws ExecutionException, InterruptedException {
+        actionTypesStore.findActionTypeByAction("action-1");
         final var actionType = actionTypesStore.actionTypeExists("action-1");
         actionType.join();
         assertNotNull(actionType);
@@ -32,13 +33,13 @@ class ActionTypesStoreTest {
 
     @Test
     void create() throws ExecutionException, InterruptedException {
-        String action = "test-action-MMMT";
-        final var actionType = actionTypesStore.create(action, new Some<>("test-action-11621628"), null, "test-unit-of-measure-11");
+
+        final var actionType = actionTypesStore.create("action-1-new", new Some<>("test-action-11621628"), null, "test-unit-of-measure-11");
         actionType.join();
         assertNotNull(actionType);
         assertNotNull(actionType.get());
         assertNotNull(actionType.get().get());
-        assertEquals(actionType.get().get().getExternalReference(), action);
+        assertEquals(actionType.get().get().getExternalReference(), "action-1-new");
     }
 
     @Test
@@ -63,7 +64,7 @@ class ActionTypesStoreTest {
 
     @Test
     void makeMock() {
-        final var actionTypeEntry = actionTypesStore.makeMock();
+        final var actionTypeEntry = actionTypesStore.makeMock(null);
         assertNotNull(actionTypeEntry);
         assertNotNull(actionTypeEntry.getName());
     }

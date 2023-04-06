@@ -14,14 +14,16 @@ class MembersStoreTest {
 
     public MembersStoreTest() {
         String accountId = "test-account";
-        this.membersStore = new MembersStore();
-        final var ziqniStores = new ZiqniStores(accountId);
+        var ziqniStores = new ZiqniStores(accountId);
         ziqniStores.generateSampleData();
+        ziqniStores.generateSampleData();
+        this.membersStore = ziqniStores.membersStore;
     }
 
     @Test
     void getIdByReferenceId() throws ExecutionException, InterruptedException {
-        final var contestModel = membersStore.getIdByReferenceId("test-member-ref-id1");
+        membersStore.create("test-member-ref-id-new-1", "test-member", null, Option.empty()).join();
+        final var contestModel = membersStore.getIdByReferenceId("test-member-ref-id-new-1");
         contestModel.join();
         assertNotNull(contestModel);
         assertNotNull(contestModel.get());
@@ -39,7 +41,7 @@ class MembersStoreTest {
 
     @Test
     void create() throws ExecutionException, InterruptedException {
-        final var member = membersStore.create("test-member-ref-id-1", "test-member", null, null);
+        final var member = membersStore.create("test-member-ref-id-1", "test-member", null, Option.empty());
         member.join();
         assertNotNull(member);
         assertNotNull(member.get());

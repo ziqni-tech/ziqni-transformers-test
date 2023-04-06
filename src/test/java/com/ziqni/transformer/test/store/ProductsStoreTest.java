@@ -19,9 +19,9 @@ class ProductsStoreTest {
 
     public ProductsStoreTest() {
         final var accountId = "test-account";
-        this.productsStore = new ProductsStore();
-        final var ziqniStores = new ZiqniStores(accountId);
+        var ziqniStores = new ZiqniStores(accountId);
         ziqniStores.generateSampleData();
+        this.productsStore = ziqniStores.productsStore;
     }
 
     @Test

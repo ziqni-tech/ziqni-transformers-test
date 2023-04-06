@@ -50,9 +50,9 @@ public class UnitsOfMeasureStore implements AsyncCacheLoader<@NonNull String, @N
 
     public CompletableFuture<Optional<Result>> create(final String key, Option<String> name, Option<String> isoCode, Double multiplier, UnitOfMeasureType unitOfMeasureType){
         final var out = new CompletableFuture<Optional<Result>>();
-        var isInCache = this.cache
-                .get(key)
-                .thenApply(Objects::nonNull)
+        var look = this.cache.getIfPresent(key);
+        var isInCache = Objects.nonNull(look) &&
+                look.thenApply(Objects::nonNull)
                 .join();
         if(isInCache)
             out.completeExceptionally(new ApiException("unit_of_measure_with_key_[" + key + "]_already_exists")); // or whatever we throw
@@ -66,7 +66,7 @@ public class UnitsOfMeasureStore implements AsyncCacheLoader<@NonNull String, @N
             }
             uom.multiplier(multiplier);
             uom.unitOfMeasureType(unitOfMeasureType);
-            out.thenApply(y -> y.orElse(new Result()
+            out.complete(Optional.of(new Result()
                     .id(uom.getId())
                     .result("CREATED")
                     .externalReference(key)));
