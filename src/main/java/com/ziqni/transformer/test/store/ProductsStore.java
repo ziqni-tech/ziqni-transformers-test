@@ -78,10 +78,7 @@ public class ProductsStore implements AsyncCacheLoader<@NonNull String, @NonNull
 
     public CompletableFuture<Optional<Result>> update(String productId, Option<String> productRefId, Option<String> displayName, Option<Seq<String>> providers, Option<String> productType, Option<Double> defaultAdjustmentFactor, Option<scala.collection.Map<String, String>> metaData) {
         final var out = new CompletableFuture<Optional<Result>>();
-        var isNotInCache = this.cache
-                .get(productId)
-                .thenApply(Objects::isNull)
-                .join();
+        var isNotInCache = Objects.isNull(this.cache.getIfPresent(productId));
         if (isNotInCache)
             out.completeExceptionally(new ApiException("product_with_id_[" + productId + "]_does_not_exist")); // or whatever we throw
         else {
