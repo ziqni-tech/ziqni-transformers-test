@@ -13,11 +13,12 @@ import com.ziqni.transformer.test.models.BasicProduct;
 import lombok.NonNull;
 import scala.Option;
 import scala.collection.JavaConverters;
-import scala.collection.Map;
+
 import scala.collection.Seq;
 
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -55,13 +56,13 @@ public class ProductsStore implements AsyncCacheLoader<@NonNull String, @NonNull
                 .thenApply(x -> x.map(BasicProduct::apply));
     }
 
-    public CompletableFuture<Optional<String>> create(String productRefId, String displayName, Seq<String> providers, String productType, Double defaultAdjustmentFactor, Option<Map<String, String>> metaData) {
+    public CompletableFuture<Optional<String>> create(String productRefId, String displayName, Seq<String> providers, String productType, Double defaultAdjustmentFactor, Option<scala.collection.Map<String, String>> metaData) {
         final var out = new CompletableFuture<Optional<String>>();
         if(this.refIdCache.containsKey(productRefId))
             out.completeExceptionally(new ApiException("product_ref_id_already_exists")); // or whatever we throw
         else {
             final var providersToCreate = JavaConverters.seqAsJavaList(providers);
-            final var metadata = JavaConverters.mapAsJavaMap(metaData.get());
+            final Map<String,String> metadata = metaData.isEmpty() ? Map.of() : JavaConverters.mapAsJavaMap(metaData.get());
             final var product = makeMock()
                     .name(displayName)
                     .productRefId(productRefId)
@@ -69,7 +70,7 @@ public class ProductsStore implements AsyncCacheLoader<@NonNull String, @NonNull
                     .metadata(metadata);
             this.cache.put(product.getId(), CompletableFuture.completedFuture(product));
             this.refIdCache.put(product.getProductRefId(), product.getId());
-            out.thenApply(x -> x.orElse(product.getId()));
+            out.complete(Optional.of(product.getId()));
         }
 
         return out;
@@ -84,23 +85,21 @@ public class ProductsStore implements AsyncCacheLoader<@NonNull String, @NonNull
         if (isNotInCache)
             out.completeExceptionally(new ApiException("product_with_id_[" + productId + "]_does_not_exist")); // or whatever we throw
         else {
-            this.cache.getIfPresent(productId)
-                    .thenApply(x -> {
+            this.cache.get(productId)
+                    .thenAccept(x -> {
                         if (!productRefId.isEmpty())
                             x.productRefId(productRefId.get());
                         if (!displayName.isEmpty())
                             x.name(displayName.get());
 //                        if (!productType.isEmpty())
 //                            x.productType(productType);
-                        if (!metaData.isEmpty())
+                        if (Objects.nonNull(metaData) && !metaData.isEmpty())
                             x.metadata(JavaConverters.mapAsJavaMap(metaData.get()));
 
-                        out.thenApply(y -> y.orElse(new Result()
+                        out.complete(Optional.of(new Result()
                                 .id(x.getId())
                                 .result("UPDATED")
                                 .externalReference(x.getProductRefId())));
-
-                        return x;
                     });
 
         }

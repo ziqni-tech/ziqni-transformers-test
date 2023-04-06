@@ -3,8 +3,12 @@ package com.ziqni.transformer.test.store;
 import com.ziqni.admin.sdk.model.Result;
 import com.ziqni.transformer.test.models.BasicProduct;
 import org.junit.jupiter.api.Test;
+import scala.Option;
 import scala.Some;
+import scala.collection.JavaConverters;
+import scala.collection.Seq$;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -48,7 +52,7 @@ class ProductsStoreTest {
 
     @Test
     void create() {
-        final var productFuture = productsStore.create("test-product-ref-id-1", "test-product", null, null, 2.0, null);
+        final var productFuture = productsStore.create("test-product-ref-id-1", "test-product", JavaConverters.asScala(List.of()), "test", 2.0, Option.empty());
         Optional<String> productIdOptional = productFuture.join();
         assertNotNull(productIdOptional);
         assertNotNull(productIdOptional.get());
@@ -56,7 +60,8 @@ class ProductsStoreTest {
 
     @Test
     void update() {
-        final var productFuture = productsStore.update("prod-1" ,new Some<>("test-product-ref-id-1"), new Some<>("updated-test-product"), null, null, null, null);
+        final var productFuture = productsStore.update("prod-1" ,new Some<>("test-product-ref-id-1"), new Some<>("updated-test-product"), Option.empty(), Option.apply("test"), Option.apply(1.0), Option.empty());
+        assertFalse(productFuture.isCompletedExceptionally());
         Optional<Result> productIdOptional = productFuture.join();
         assertNotNull(productIdOptional);
         assertNotNull(productIdOptional.get());

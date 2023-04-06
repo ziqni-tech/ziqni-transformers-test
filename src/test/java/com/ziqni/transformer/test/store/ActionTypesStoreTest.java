@@ -1,6 +1,8 @@
 package com.ziqni.transformer.test.store;
 
+import com.ziqni.admin.sdk.model.UnitOfMeasureType;
 import org.junit.jupiter.api.*;
+import scala.Option;
 import scala.Some;
 
 import java.util.concurrent.ExecutionException;
@@ -42,7 +44,7 @@ class ActionTypesStoreTest {
     @Test
     void update() throws ExecutionException, InterruptedException {
         String action = "test-action-MMMT";
-        final var actionType = actionTypesStore.update(action, new Some<>("test-action-11621628"), null, null);
+        final var actionType = actionTypesStore.update(action, new Some<>("test-action-11621628"), Option.empty(), Option.empty());
         actionType.join();
         assertNotNull(actionType);
         assertNotNull(actionType.get());

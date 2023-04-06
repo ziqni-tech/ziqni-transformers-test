@@ -3,9 +3,12 @@ package com.ziqni.transformer.test.store;
 import com.ziqni.admin.sdk.model.Result;
 import com.ziqni.admin.sdk.model.Reward;
 import com.ziqni.admin.sdk.model.UnitOfMeasure;
+import com.ziqni.admin.sdk.model.UnitOfMeasureType;
 import com.ziqni.transformer.test.models.BasicReward;
 import com.ziqni.transformer.test.models.BasicUnitOfMeasure;
 import org.junit.jupiter.api.Test;
+import scala.None;
+import scala.Option;
 import scala.Some;
 
 import java.util.Optional;
@@ -52,7 +55,7 @@ class UnitsOfMeasureStoreTest {
 
     @Test
     void create() {
-        final var unitOfMeasureFuture = unitsOfMeasureStore.create("test-product-ref-id-1", new Some<>("test-product"), null, 2.0,  null);
+        final var unitOfMeasureFuture = unitsOfMeasureStore.create("test-product-ref-id-new-1", new Some<>("test-product"), Option.empty(), 2.0, UnitOfMeasureType.OTHER);
         Optional<Result> productIdOptional = unitOfMeasureFuture.join();
         assertNotNull(productIdOptional);
         assertNotNull(productIdOptional.get());

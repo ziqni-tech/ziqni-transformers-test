@@ -47,7 +47,8 @@ class MembersStoreTest {
 
     @Test
     void update() throws ExecutionException, InterruptedException {
-        final var member = membersStore.update("memb-1" ,new Some<>("test-member-ref-id-1"), new Some<>("test-member"), null, null);
+        final var member = membersStore.update("memb-1" ,new Some<>("test-member-ref-id-1"), new Some<>("test-member"), Option.empty(), Option.empty());
+        assertFalse(member.isCompletedExceptionally());
         member.join();
         assertNotNull(member);
         assertNotNull(member.get());

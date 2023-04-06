@@ -80,7 +80,7 @@ public class MembersStore implements AsyncCacheLoader<@NonNull String, @NonNull 
                     x.name(displayName.get());
                 if (!tagsToUpdate.isEmpty())
                     x.tags(JavaConverters.seqAsJavaList(tagsToUpdate.get()));
-                if (!metaData.isEmpty())
+                if (Objects.nonNull(metaData) && !metaData.isEmpty())
                     x.metadata(JavaConverters.mapAsJavaMap(metaData.get()));
 
                 out.complete(Optional.of(new Result()
