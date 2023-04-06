@@ -34,7 +34,7 @@ class ActionTypesStoreTest {
     @Test
     void create() throws ExecutionException, InterruptedException {
 
-        final var actionType = actionTypesStore.create("action-1-new", new Some<>("test-action-11621628"), null, "test-unit-of-measure-11");
+        final var actionType = actionTypesStore.create("action-1-new", new Some<>("test-action-11621628"), Option.empty(), "test-unit-of-measure-11");
         actionType.join();
         assertNotNull(actionType);
         assertNotNull(actionType.get());

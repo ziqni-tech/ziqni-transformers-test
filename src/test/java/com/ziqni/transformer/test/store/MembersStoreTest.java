@@ -3,7 +3,9 @@ package com.ziqni.transformer.test.store;
 import org.junit.jupiter.api.Test;
 import scala.Option;
 import scala.Some;
+import scala.collection.JavaConverters;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,7 +24,7 @@ class MembersStoreTest {
 
     @Test
     void getIdByReferenceId() throws ExecutionException, InterruptedException {
-        membersStore.create("test-member-ref-id-new-1", "test-member", null, Option.empty()).join();
+        membersStore.create("test-member-ref-id-new-1", "test-member", JavaConverters.asScala(List.of()), Option.empty()).join();
         final var contestModel = membersStore.getIdByReferenceId("test-member-ref-id-new-1");
         contestModel.join();
         assertNotNull(contestModel);
@@ -41,7 +43,7 @@ class MembersStoreTest {
 
     @Test
     void create() throws ExecutionException, InterruptedException {
-        final var member = membersStore.create("test-member-ref-id-1", "test-member", null, Option.empty());
+        final var member = membersStore.create("test-member-ref-id-1", "test-member", JavaConverters.asScala(List.of()), Option.empty());
         member.join();
         assertNotNull(member);
         assertNotNull(member.get());
