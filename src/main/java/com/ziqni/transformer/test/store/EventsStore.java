@@ -94,8 +94,10 @@ public class EventsStore implements CacheLoader<@NonNull String, EventsStore.Eve
 
         final var eventTransaction = new EventTransaction();
         eventTransaction.addBasicEvent(basicEventModel);
+        batchIdCache.put(basicEventModel.batchId().get(), eventTransaction.getEvents());
         this.cache.put(basicEventModel.eventRefId(), CompletableFuture.completedFuture(eventTransaction));
         response.addResultsItem(new Result().id(basicEventModel.eventRefId()));
+
     }
 
     public EventTransaction makeMock(){

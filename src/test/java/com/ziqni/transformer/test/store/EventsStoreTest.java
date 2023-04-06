@@ -42,7 +42,7 @@ class EventsStoreTest {
 
     @Test
     void findByBatchId() {
-        final var eventsStoreByBatchId = eventsStore.findByBatchId("memb-1");
+        final var eventsStoreByBatchId = eventsStore.findByBatchId("1002");
         List<BasicEventModel> basicEventModels = eventsStoreByBatchId.join();
         assertNotNull(basicEventModels);
         assertTrue(basicEventModels.size() > 0);

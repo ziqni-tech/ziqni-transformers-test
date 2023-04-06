@@ -3,6 +3,8 @@ package com.ziqni.transformer.test.store;
 import com.ziqni.admin.sdk.model.CompetitionStatus;
 import com.ziqni.admin.sdk.model.Contest;
 import com.ziqni.admin.sdk.model.ContestStatus;
+import com.ziqni.transformers.domain.BasicEventModel;
+import scala.Some;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -44,7 +46,9 @@ public class ZiqniStores {
             rewardStore.getReward("reward-" + x);
             awardStore.getAward("award-" + x);
             actionTypesStore.findActionTypeByAction("actionType-" + x);
-            CompletableFuture<Optional<ActionTypesStore.ActionTypeEntry>> actionTypeByAction = actionTypesStore.findActionTypeByAction("action-" + x);
+            actionTypesStore.findActionTypeByAction("action-" + x);
+            final var basicEventModel = new BasicEventModel(new Some<>("memb-1"), "test-member-ref-id-1", null, "test-event-" + x, new Some<>("1002"), "test-action", 2.0, null, null, null, null);
+            eventsStore.pushEvent(basicEventModel);
         }
         generateActiveContsWithDifferentCompStatuses();
         generateActiveCompsWithDifferentContStatuses();
