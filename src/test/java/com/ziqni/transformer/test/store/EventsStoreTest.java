@@ -1,11 +1,15 @@
 package com.ziqni.transformer.test.store;
 
+import com.ziqni.transformer.test.utils.ScalaUtils;
 import com.ziqni.transformers.domain.BasicEventModel;
+import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 import scala.None;
 import scala.Option;
 import scala.Some;
 import scala.collection.JavaConverters;
+import scala.collection.immutable.Map$;
+import scala.jdk.javaapi.CollectionConverters;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +29,7 @@ class EventsStoreTest {
 
     @Test
     void pushEvent() {
-        final var basicEventModel = new BasicEventModel(new Some<>("memb-2"), "test-member-ref-id-1", null, "test-event-1", new Some<>("1002"), "test-action", 2.0, null, null, null, null);
+        final var basicEventModel = new BasicEventModel(new Some<>("memb-2"), "test-member-ref-id-1", "1", "test-event-1", new Some<>("1002"), "test-action", 2.0, DateTime.now(), ScalaUtils.emptySeqString, Map$.MODULE$.empty(), Map$.MODULE$.empty());
         final var productFuture = eventsStore.pushEvent(basicEventModel);
         final var eventResponse = productFuture.join();
         assertNotNull(eventResponse);
@@ -34,7 +38,7 @@ class EventsStoreTest {
 
     @Test
     void pushEventEmpty() {
-        final var basicEventModel = new BasicEventModel(Option.empty(), "test-member-ref-id-1", null, "test-event-1", new Some<>("1002"), "test-action", 2.0, null, null, null, null);
+        final var basicEventModel = new BasicEventModel(Option.empty(), "test-member-ref-id-1", "2", "test-event-1", new Some<>("1002"), "test-action", 2.0, DateTime.now(), ScalaUtils.emptySeqString, Map$.MODULE$.empty(), Map$.MODULE$.empty());
         final var productFuture = eventsStore.pushEvent(basicEventModel);
         final var eventResponse = productFuture.join();
         assertNotNull(eventResponse);
@@ -43,7 +47,7 @@ class EventsStoreTest {
 
     @Test
     void pushEventTransaction() {
-        final var basicEventModel = new BasicEventModel(new Some<>("memb-2"), "test-member-ref-id-1", null, "test-event-1", new Some<>("1002"), "test-action", 2.0, null, null, null, null);
+        final var basicEventModel = new BasicEventModel(new Some<>("memb-2"), "test-member-ref-id-1", "3", "test-event-1", new Some<>("1002"), "test-action", 2.0, DateTime.now(), ScalaUtils.emptySeqString, Map$.MODULE$.empty(), Map$.MODULE$.empty());
         final var productFuture = eventsStore.pushEventTransaction(basicEventModel);
         final var eventResponse = productFuture.join();
         assertNotNull(eventResponse);
