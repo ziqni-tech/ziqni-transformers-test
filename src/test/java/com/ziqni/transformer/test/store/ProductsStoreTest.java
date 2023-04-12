@@ -2,11 +2,11 @@ package com.ziqni.transformer.test.store;
 
 import com.ziqni.admin.sdk.model.Result;
 import com.ziqni.transformer.test.models.BasicProduct;
+import com.ziqni.transformer.test.utils.ScalaUtils;
 import org.junit.jupiter.api.Test;
 import scala.Option;
 import scala.Some;
 import scala.collection.JavaConverters;
-import scala.collection.Seq$;
 
 import java.util.List;
 import java.util.Optional;
@@ -52,7 +52,7 @@ class ProductsStoreTest {
 
     @Test
     void create() {
-        final var productFuture = productsStore.create("test-product-ref-id-1", "test-product", JavaConverters.asScala(List.of()), "test", 2.0, Option.empty());
+        final var productFuture = productsStore.create("test-product-ref-id-1", "test-product", ScalaUtils.emptySeqString, "test", 2.0, Option.empty());
         Optional<String> productIdOptional = productFuture.join();
         assertNotNull(productIdOptional);
         assertNotNull(productIdOptional.get());

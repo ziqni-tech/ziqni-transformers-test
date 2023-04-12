@@ -6,9 +6,12 @@ import com.ziqni.admin.sdk.model.ModelApiResponse;
 import com.ziqni.admin.sdk.model.Result;
 import com.ziqni.transformer.test.concurrent.ZiqniConcurrentHashMap;
 import com.ziqni.transformer.test.concurrent.ZiqniExecutors;
+import com.ziqni.transformer.test.utils.ScalaUtils;
 import com.ziqni.transformers.domain.BasicEventModel;
 import lombok.NonNull;
 import org.joda.time.DateTime;
+import scala.None$;
+import scala.Option;
 import scala.Some;
 
 import javax.annotation.Nullable;
@@ -17,7 +20,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
+import scala.collection.JavaConverters;
+import scala.collection.immutable.Seq;
+import scala.collection.immutable.Seq$;
+import scala.collection.immutable.Map$;
+import scala.jdk.javaapi.CollectionConverters;
 
 public class EventsStore implements CacheLoader<@NonNull String, EventsStore.EventTransaction>, RemovalListener<@NonNull String, EventsStore.EventTransaction> {
 
@@ -106,16 +113,16 @@ public class EventsStore implements CacheLoader<@NonNull String, EventsStore.Eve
         AtomicReference<String> memberId = new AtomicReference<>();
         AtomicReference<String> action = new AtomicReference<>();
         var testEventName = new Some<>("test-event" + 1);
-        final var createdMember = membersStore.create(memberRefId, "member-" + identifierCounter, null, null);
+        final var createdMember = membersStore.create(memberRefId, "member-" + identifierCounter,  ScalaUtils.emptySeqString, Option.empty());
         createdMember.thenAccept(y -> {
             y.ifPresent(memberId::set);
         });
-        final var createdActionType = actionTypesStore.create("test-event", testEventName, null, null);
+        final var createdActionType = actionTypesStore.create("test-event", testEventName, Option.empty(), null);
         createdActionType.thenAccept(y -> {
             y.ifPresent(z -> action.set(z.getExternalReference()));
         });
         String batchId = "batch-" + identifierCounter;
-        eventTrans.addBasicEvent(new BasicEventModel(new Some<>(memberId.get()), memberRefId, null, "event-ref-id" + identifierCounter, new Some<>(batchId), action.get(), 2.0, DateTime.now(), null, null, null));
+        eventTrans.addBasicEvent(new BasicEventModel(new Some<>(memberId.get()), memberRefId, "ref-id-"+identifierCounter, "event-ref-id" + identifierCounter, new Some<>(batchId), action.get(), 2.0, DateTime.now(),  ScalaUtils.emptySeqString, Map$.MODULE$.empty(), Map$.MODULE$.empty()));
         this.batchIdCache.put(batchId, eventTrans.getEvents());
         return eventTrans;
     }
