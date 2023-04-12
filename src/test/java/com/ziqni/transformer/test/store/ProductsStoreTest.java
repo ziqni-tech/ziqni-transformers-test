@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import scala.Option;
 import scala.Some;
 import scala.collection.JavaConverters;
-import scala.collection.Seq$;
 
 import java.util.List;
 import java.util.Optional;

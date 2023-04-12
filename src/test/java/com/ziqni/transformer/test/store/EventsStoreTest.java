@@ -2,6 +2,7 @@ package com.ziqni.transformer.test.store;
 
 import com.ziqni.transformers.domain.BasicEventModel;
 import org.junit.jupiter.api.Test;
+import scala.None;
 import scala.Option;
 import scala.Some;
 import scala.collection.JavaConverters;
@@ -25,6 +26,15 @@ class EventsStoreTest {
     @Test
     void pushEvent() {
         final var basicEventModel = new BasicEventModel(new Some<>("memb-2"), "test-member-ref-id-1", null, "test-event-1", new Some<>("1002"), "test-action", 2.0, null, null, null, null);
+        final var productFuture = eventsStore.pushEvent(basicEventModel);
+        final var eventResponse = productFuture.join();
+        assertNotNull(eventResponse);
+        assertTrue(eventResponse.getResults().size() > 0);
+    }
+
+    @Test
+    void pushEventEmpty() {
+        final var basicEventModel = new BasicEventModel(Option.empty(), "test-member-ref-id-1", null, "test-event-1", new Some<>("1002"), "test-action", 2.0, null, null, null, null);
         final var productFuture = eventsStore.pushEvent(basicEventModel);
         final var eventResponse = productFuture.join();
         assertNotNull(eventResponse);
