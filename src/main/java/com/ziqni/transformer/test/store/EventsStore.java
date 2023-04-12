@@ -10,7 +10,6 @@ import com.ziqni.transformer.test.utils.ScalaUtils;
 import com.ziqni.transformers.domain.BasicEventModel;
 import lombok.NonNull;
 import org.joda.time.DateTime;
-import scala.None$;
 import scala.Option;
 import scala.Some;
 
@@ -20,11 +19,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import scala.collection.JavaConverters;
-import scala.collection.immutable.Seq;
-import scala.collection.immutable.Seq$;
+
 import scala.collection.immutable.Map$;
-import scala.jdk.javaapi.CollectionConverters;
 
 public class EventsStore implements CacheLoader<@NonNull String, EventsStore.EventTransaction>, RemovalListener<@NonNull String, EventsStore.EventTransaction> {
 

@@ -6,9 +6,7 @@ import com.ziqni.transformer.test.utils.ScalaUtils;
 import org.junit.jupiter.api.Test;
 import scala.Option;
 import scala.Some;
-import scala.collection.JavaConverters;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
