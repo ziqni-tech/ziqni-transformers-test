@@ -4,15 +4,11 @@ import com.ziqni.transformer.test.utils.ScalaUtils;
 import com.ziqni.transformers.domain.BasicEventModel;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
-import scala.None;
 import scala.Option;
 import scala.Some;
-import scala.collection.JavaConverters;
 import scala.collection.immutable.Map$;
-import scala.jdk.javaapi.CollectionConverters;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
