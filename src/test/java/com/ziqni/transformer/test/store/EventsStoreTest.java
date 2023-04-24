@@ -25,7 +25,7 @@ class EventsStoreTest {
 
     @Test
     void pushEvent() {
-        final var basicEventModel = new BasicEventModel(new Some<>("memb-2"), "test-member-ref-id-1", "1", "test-event-1", new Some<>("1002"), "test-action", 2.0, DateTime.now(), ScalaUtils.emptySeqString, Map$.MODULE$.empty(), Map$.MODULE$.empty());
+        final var basicEventModel = new BasicEventModel(new Some<>("memb-2"), "test-member-ref-id-1", "1", "test-event-1", new Some<>("1002"), "test-action", 2.0, DateTime.now(), ScalaUtils.emptySeqString, Map$.MODULE$.empty());
         final var future = eventsStore.pushEvent(basicEventModel);
         final var eventResponse = future.join();
         assertNotNull(eventResponse);
@@ -34,7 +34,7 @@ class EventsStoreTest {
 
     @Test
     void pushEventEmpty() {
-        final var basicEventModel = new BasicEventModel(Option.empty(), "test-member-ref-id-1", "2", "test-event-1", new Some<>("1002"), "test-action", 2.0, DateTime.now(), ScalaUtils.emptySeqString, Map$.MODULE$.empty(), Map$.MODULE$.empty());
+        final var basicEventModel = new BasicEventModel(Option.empty(), "test-member-ref-id-1", "2", "test-event-1", new Some<>("1002"), "test-action", 2.0, DateTime.now(), ScalaUtils.emptySeqString, Map$.MODULE$.empty());
         final var future = eventsStore.pushEvent(basicEventModel);
         final var eventResponse = future.join();
         assertNotNull(eventResponse);
@@ -43,7 +43,7 @@ class EventsStoreTest {
 
     @Test
     void pushEventTransaction() {
-        final var basicEventModel = new BasicEventModel(new Some<>("memb-2"), "test-member-ref-id-1", "3", "test-event-1", new Some<>("1002"), "test-action", 2.0, DateTime.now(), ScalaUtils.emptySeqString, Map$.MODULE$.empty(), Map$.MODULE$.empty());
+        final var basicEventModel = new BasicEventModel(new Some<>("memb-2"), "test-member-ref-id-1", "3", "test-event-1", new Some<>("1002"), "test-action", 2.0, DateTime.now(), ScalaUtils.emptySeqString, Map$.MODULE$.empty());
         final var future = eventsStore.pushEventTransaction(basicEventModel);
         final var eventResponse = future.join();
         assertNotNull(eventResponse);
