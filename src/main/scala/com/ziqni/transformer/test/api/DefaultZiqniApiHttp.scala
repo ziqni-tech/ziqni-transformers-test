@@ -1,45 +1,50 @@
 package com.ziqni.transformer.test.api
 
-import com.ziqni.transformers.ZiqniApiHttp
+import com.ziqni.transformers.{ZiqniApiHttp, ZiqniContext}
 import com.ziqni.transformers.domain.{BasicAuthCredentials, HttpResponseEntity}
-import sttp.client.{UriContext, basicRequest}
-import sttp.client._
+import sttp.client.{UriContext, basicRequest, _}
 import sttp.client.quick.backend
 import sttp.model.Method
 
 object DefaultZiqniApiHttp extends ZiqniApiHttp {
 
-  override def httpGet(url: String, headers: Map[String, Seq[String]], basicAuthCredentials: Option[BasicAuthCredentials], sendCompressed: Boolean = true): HttpResponseEntity = {
+  override def httpGetWithLogMessage(url: String, headers: Map[String, Seq[String]], basicAuthCredentials: Option[BasicAuthCredentials], sendCompressed: Boolean = true, logMessage: Option[String], ziqniContext: ZiqniContext): HttpResponseEntity = {
     val request = basicRequest.method(Method.GET, uri"$url")
 
-    sendAndSetResult(setHeaders(request, headers))
+    basicAuthCredentials.foreach(s => request.auth.basic(s.username,s.password))
+
+    sendAndSetResult(setHeaders(request, headers), logMessage, ziqniContext)
   }
 
-  override def httpPut(url: String, body: String, headers: Map[String, Seq[String]], basicAuthCredentials: Option[BasicAuthCredentials], sendCompressed: Boolean = true): HttpResponseEntity = {
+  override def httpPutWithLogMessage(url: String, body: String, headers: Map[String, Seq[String]], basicAuthCredentials: Option[BasicAuthCredentials], sendCompressed: Boolean = true, logMessage: Option[String], ziqniContext: ZiqniContext): HttpResponseEntity = {
     val request = basicRequest
       .method(Method.PUT, uri"$url")
       .body(body)
       .contentType("application/json")
-//      .acceptEncoding("gzip, deflate")
 
-    sendAndSetResult(setHeaders(request, headers))
+    basicAuthCredentials.foreach(s => request.auth.basic(s.username,s.password))
+
+    sendAndSetResult(setHeaders(request, headers), logMessage, ziqniContext)
   }
 
-  override def httpPost(url: String, body: String, headers: Map[String, Seq[String]], basicAuthCredentials: Option[BasicAuthCredentials], sendCompressed: Boolean = true): HttpResponseEntity = {
+  override def httpPostWithLogMessage(url: String, body: String, headers: Map[String, Seq[String]], basicAuthCredentials: Option[BasicAuthCredentials], sendCompressed: Boolean = true, logMessage: Option[String], ziqniContext: ZiqniContext): HttpResponseEntity = {
 
 
     val request = basicRequest.method(Method.POST, uri"$url")
       .body(body)
       .contentType("application/json")
-//      .acceptEncoding("gzip, deflate")
 
-    sendAndSetResult(setHeaders(request, headers))
+    basicAuthCredentials.foreach(s => request.auth.basic(s.username,s.password))
+
+    sendAndSetResult(setHeaders(request, headers), logMessage, ziqniContext)
   }
 
-  override def httpDelete(url: String, headers: Map[String, Seq[String]], basicAuthCredentials: Option[BasicAuthCredentials], sendCompressed: Boolean = true): HttpResponseEntity = {
+  override def httpDeleteWithLogMessage(url: String, headers: Map[String, Seq[String]], basicAuthCredentials: Option[BasicAuthCredentials], sendCompressed: Boolean = true, logMessage: Option[String], ziqniContext: ZiqniContext): HttpResponseEntity = {
     val request = basicRequest.method(Method.DELETE, uri"$url")
 
-    sendAndSetResult(setHeaders(request, headers))
+    basicAuthCredentials.foreach(s => request.auth.basic(s.username,s.password))
+
+    sendAndSetResult(setHeaders(request, headers), logMessage, ziqniContext)
   }
 
   private def setHeaders(request: Request[Either[String, String], Nothing], headers: Map[String, Seq[String]]): Request[Either[String, String], Nothing] = {
@@ -59,13 +64,18 @@ object DefaultZiqniApiHttp extends ZiqniApiHttp {
     request.headers(headersFlat.toMap)
   }
 
-  private def sendAndSetResult(request: Request[Either[String, String], Nothing]): HttpResponseEntity = {
+  def sendAndSetResult(request: Request[Either[String, String], Nothing], logMessage: Option[String], ziqniContext: ZiqniContext): HttpResponseEntity = {
     val result = request.send()
+
+    val mesg = logMessage.map(m => ", "+m.take(256)).getOrElse("")
+
     result.body.fold(
-      ko =>
-        HttpResponseEntity(ko, result.code.code),
-      ok =>
+      ko => {
+        HttpResponseEntity(ko, result.code.code)
+      },
+      ok => {
         HttpResponseEntity(ok, result.code.code)
+      }
     )
   }
 }

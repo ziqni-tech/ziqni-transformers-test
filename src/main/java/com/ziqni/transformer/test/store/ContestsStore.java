@@ -56,8 +56,6 @@ public class ContestsStore implements AsyncCacheLoader<@NonNull String, @NonNull
                 .name("Test-cont-"+identifierCount)
                 .round(1)
                 .roundType(RoundType.TIMEBOUND)
-                .groupStage(1)
-                .groupStageLabel("Test-group")
                 .addEntrantsFromContestItem("Test-entrant")
                 .maxNumberOfEntrants(10)
                 .minNumberOfEntrants(1)

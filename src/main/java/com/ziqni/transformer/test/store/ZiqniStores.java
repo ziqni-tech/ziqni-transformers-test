@@ -47,7 +47,7 @@ public class ZiqniStores {
             awardStore.getAward("award-" + x);
             actionTypesStore.findActionTypeByAction("actionType-" + x);
             actionTypesStore.findActionTypeByAction("action-" + x);
-            final var basicEventModel = new BasicEventModel(new Some<>("memb-1"), "test-member-ref-id-1", null, "test-event-" + x, new Some<>("1002"), "test-action", 2.0, null, null, null, null);
+            final var basicEventModel = new BasicEventModel(new Some<>("memb-1"), "test-member-ref-id-1", null, "test-event-" + x, new Some<>("1002"), "test-action", 2.0, null, null, null);
             eventsStore.pushEvent(basicEventModel);
         }
         generateActiveContsWithDifferentCompStatuses();

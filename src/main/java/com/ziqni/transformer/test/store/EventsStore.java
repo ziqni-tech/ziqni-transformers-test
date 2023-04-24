@@ -122,7 +122,7 @@ public class EventsStore implements CacheLoader<@NonNull String, EventsStore.Eve
             y.ifPresent(z -> action.set(z.getExternalReference()));
         });
         String batchId = "batch-" + identifierCounter;
-        eventTrans.addBasicEvent(new BasicEventModel(new Some<>(memberId.get()), memberRefId, "ref-id-"+identifierCounter, "event-ref-id" + identifierCounter, new Some<>(batchId), action.get(), 2.0, DateTime.now(),  ScalaUtils.emptySeqString, Map$.MODULE$.empty(), Map$.MODULE$.empty()));
+        eventTrans.addBasicEvent(new BasicEventModel(new Some<>(memberId.get()), memberRefId, "ref-id-"+identifierCounter, "event-ref-id" + identifierCounter, new Some<>(batchId), action.get(), 2.0, DateTime.now(),  ScalaUtils.emptySeqString, Map$.MODULE$.empty()));
         this.batchIdCache.put(batchId, eventTrans.getEvents());
         return eventTrans;
     }
