@@ -16,7 +16,7 @@ class AchievementsStoreTest {
 
     public AchievementsStoreTest() {
         String accountId = "test-account";
-        var ziqniStores = new ZiqniStores(accountId, StoreContext.StandAlone());
+        var ziqniStores = new ZiqniStores(StoreContext.StandAlone());
         ziqniStores.generateSampleData();
         this.achievementsStore = ziqniStores.achievementsStore;
     }

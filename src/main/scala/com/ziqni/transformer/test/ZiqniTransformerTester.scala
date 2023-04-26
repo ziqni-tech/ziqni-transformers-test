@@ -1,8 +1,9 @@
 package com.ziqni.transformer.test
 
 import com.ziqni.transformer.test.api.{DefaultZiqniApiHttp, ZiqniApiAsyncClient, ZiqniApiClient, ZiqniContextExt}
-import com.ziqni.transformer.test.store.ZiqniStores
+import com.ziqni.transformer.test.store.{StoreContext, ZiqniStores}
 import com.ziqni.transformers.ZiqniTransformerInfo
+
 import java.util.concurrent.ConcurrentHashMap
 import scala.collection.concurrent.TrieMap
 
@@ -12,7 +13,7 @@ object ZiqniTransformerTester {
   val TestSpaceName = "my-test-space"
 
   def loadDefault(): ZiqniTransformerTester = {
-    val ziqniStores = new ZiqniStores(TestAccountId)
+    val ziqniStores = new ZiqniStores(StoreContext.StandAlone())
     val ziqniApiAsync = ZiqniApiAsyncClient(ziqniStores = ziqniStores, masterAccount = None, accountId = TestAccountId, spaceName = TestSpaceName, _subAccounts = TrieMap.empty, actions = new ConcurrentHashMap[String, Seq[String]]())
     val ziqniApi = ZiqniApiClient(async = ziqniApiAsync, masterAccount = None, accountId = TestAccountId, spaceName = TestSpaceName, _subAccounts = TrieMap.empty, actions = new ConcurrentHashMap[String, Seq[String]]())
     val context = ZiqniContextExt(

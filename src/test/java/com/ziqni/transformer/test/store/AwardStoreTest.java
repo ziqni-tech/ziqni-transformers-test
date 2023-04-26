@@ -13,7 +13,7 @@ class AwardStoreTest {
     public AwardStoreTest() {
         String accountId = "test-account";
         this.rewardStore = new RewardStore(StoreContext.StandAlone());
-        var ziqniStores = new ZiqniStores(accountId,StoreContext.StandAlone());
+        var ziqniStores = new ZiqniStores(StoreContext.StandAlone());
         ziqniStores.generateSampleData();
         this.awardStore = ziqniStores.awardStore;
     }
