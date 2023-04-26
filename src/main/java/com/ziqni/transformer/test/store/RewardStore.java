@@ -32,6 +32,9 @@ public class RewardStore implements AsyncCacheLoader<@NonNull String, @NonNull R
             .executor(ZiqniExecutors.GlobalZiqniCachesExecutor)
             .buildAsync(this);
 
+    public RewardStore(StoreContext context) {
+    }
+
     public CompletableFuture<Optional<BasicReward>> getBasicReward(String id){
         return getReward(id).thenApply(x-> x.map(BasicReward::apply));
     }

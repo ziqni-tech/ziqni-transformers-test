@@ -33,7 +33,7 @@ public class AwardStore implements AsyncCacheLoader<@NonNull String, @NonNull Aw
             .executor(ZiqniExecutors.GlobalZiqniCachesExecutor)
             .buildAsync(this);
 
-    public AwardStore(RewardStore rewardStore) {
+    public AwardStore(RewardStore rewardStore, StoreContext context) {
         this.rewardStore = rewardStore;
     }
 

@@ -26,6 +26,9 @@ public class ActionTypesStore implements AsyncCacheLoader<@NonNull String, Actio
 
     private final static AtomicInteger identifierCounter = new AtomicInteger();
 
+    public ActionTypesStore(StoreContext context) {
+    }
+
     public final AsyncLoadingCache<@NonNull String, @NonNull ActionTypeEntry> cache = Caffeine
             .newBuilder()
             .maximumSize(10_000)

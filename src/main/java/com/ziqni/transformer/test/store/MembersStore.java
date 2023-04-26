@@ -33,6 +33,9 @@ public class MembersStore implements AsyncCacheLoader<@NonNull String, @NonNull 
             .executor(ZiqniExecutors.GlobalZiqniCachesExecutor)
             .buildAsync(this);
 
+    public MembersStore(StoreContext context) {
+    }
+
     /**
      * Get methods
      **/

@@ -27,6 +27,9 @@ public class ContestsStore implements AsyncCacheLoader<@NonNull String, @NonNull
             .executor(ZiqniExecutors.GlobalZiqniCachesExecutor)
             .buildAsync(this);
 
+    public ContestsStore(StoreContext context) {
+    }
+
     public CompletableFuture<Optional<BasicContest>> getBasicContestModel(String id) {
         return getContest(id).thenApply(contest -> contest.map(BasicContest::apply));
     }

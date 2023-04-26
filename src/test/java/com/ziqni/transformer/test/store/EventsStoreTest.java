@@ -18,7 +18,7 @@ class EventsStoreTest {
 
     public EventsStoreTest() {
         String accountId = "test-account";
-        var ziqniStores = new ZiqniStores(accountId);
+        var ziqniStores = new ZiqniStores(accountId,StoreContext.StandAlone());
         ziqniStores.generateSampleData();
         this.eventsStore = ziqniStores.eventsStore;
     }

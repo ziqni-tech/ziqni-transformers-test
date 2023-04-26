@@ -15,7 +15,7 @@ class RewardStoreTest {
 
     public RewardStoreTest() {
         final var accountId = "test-account";
-        var ziqniStores = new ZiqniStores(accountId);
+        var ziqniStores = new ZiqniStores(accountId,StoreContext.StandAlone());
         ziqniStores.generateSampleData();
         this.rewardStore = ziqniStores.rewardStore;
     }

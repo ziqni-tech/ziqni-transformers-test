@@ -15,7 +15,7 @@ class ContestsStoreTest {
 
     public ContestsStoreTest() {
         String accountId = "test-account";
-        var ziqniStores = new ZiqniStores(accountId);
+        var ziqniStores = new ZiqniStores(accountId,StoreContext.StandAlone());
         ziqniStores.generateSampleData();
         this.contestsStore = ziqniStores.contestsStore;
     }

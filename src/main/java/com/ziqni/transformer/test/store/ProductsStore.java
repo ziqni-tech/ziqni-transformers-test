@@ -32,7 +32,7 @@ public class ProductsStore implements AsyncCacheLoader<@NonNull String, @NonNull
     private final ZiqniConcurrentHashMap<String, String> refIdCache = new ZiqniConcurrentHashMap<>();
     public final AsyncLoadingCache<@org.checkerframework.checker.nullness.qual.NonNull String, @org.checkerframework.checker.nullness.qual.NonNull Product> cache;
 
-    public ProductsStore() {
+    public ProductsStore(StoreContext context) {
         cache = Caffeine
                 .newBuilder()
                 .expireAfterAccess(5, TimeUnit.MINUTES)

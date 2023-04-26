@@ -17,7 +17,7 @@ class ProductsStoreTest {
 
     public ProductsStoreTest() {
         final var accountId = "test-account";
-        var ziqniStores = new ZiqniStores(accountId);
+        var ziqniStores = new ZiqniStores(accountId,StoreContext.StandAlone());
         ziqniStores.generateSampleData();
         this.productsStore = ziqniStores.productsStore;
     }

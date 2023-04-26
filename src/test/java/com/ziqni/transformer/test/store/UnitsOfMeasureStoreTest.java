@@ -20,8 +20,7 @@ class UnitsOfMeasureStoreTest {
     private final UnitsOfMeasureStore unitsOfMeasureStore;
 
     public UnitsOfMeasureStoreTest() {
-        final var accountId = "test-account";
-        var ziqniStores = new ZiqniStores(accountId);
+        var ziqniStores = new ZiqniStores(StoreContext.StandAlone());
         ziqniStores.generateSampleData();
         this.unitsOfMeasureStore = ziqniStores.unitsOfMeasureStore;
     }

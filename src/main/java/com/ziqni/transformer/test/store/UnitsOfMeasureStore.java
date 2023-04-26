@@ -36,6 +36,9 @@ public class UnitsOfMeasureStore implements AsyncCacheLoader<@NonNull String, @N
             .executor(ZiqniExecutors.GlobalZiqniCachesExecutor)
             .buildAsync(this);
 
+    public UnitsOfMeasureStore(StoreContext context) {
+    }
+
     public CompletableFuture<Optional<BasicUnitOfMeasure>> getBasicUnitOfMeasure(String uom) {
         return getUnitOfMeasure(uom).thenApply(x->x.map(BasicUnitOfMeasure::apply));
     }

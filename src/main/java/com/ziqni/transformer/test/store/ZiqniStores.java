@@ -24,16 +24,16 @@ public class ZiqniStores {
     public final AwardStore awardStore;
    public final UnitsOfMeasureStore unitsOfMeasureStore;
 
-    public ZiqniStores(String accountId) {
-        this.membersStore = new MembersStore();
-        this.productsStore = new ProductsStore();
-        this.actionTypesStore = new ActionTypesStore();
-        this.achievementsStore = new AchievementsStore(accountId);
-        this.contestsStore = new ContestsStore();
-        this.rewardStore = new RewardStore();
-        this.awardStore = new AwardStore(rewardStore);
-        this.unitsOfMeasureStore = new UnitsOfMeasureStore();
-        this.eventsStore = new EventsStore(productsStore, membersStore, actionTypesStore);
+    public ZiqniStores(StoreContext context) {
+        this.membersStore = new MembersStore(context);
+        this.productsStore = new ProductsStore(context);
+        this.actionTypesStore = new ActionTypesStore(context);
+        this.achievementsStore = new AchievementsStore(context);
+        this.contestsStore = new ContestsStore(context);
+        this.rewardStore = new RewardStore(context);
+        this.awardStore = new AwardStore(rewardStore,context);
+        this.unitsOfMeasureStore = new UnitsOfMeasureStore(context);
+        this.eventsStore = new EventsStore(productsStore, membersStore, actionTypesStore,context);
     }
 
     public void generateSampleData() {

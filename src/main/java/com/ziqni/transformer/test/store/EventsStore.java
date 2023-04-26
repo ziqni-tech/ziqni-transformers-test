@@ -46,7 +46,7 @@ public class EventsStore implements CacheLoader<@NonNull String, EventsStore.Eve
         return makeMock();
     }
 
-    public EventsStore(ProductsStore productsStore, MembersStore membersStore, ActionTypesStore actionTypesStore) {
+    public EventsStore(ProductsStore productsStore, MembersStore membersStore, ActionTypesStore actionTypesStore, StoreContext context) {
         this.productsStore = productsStore;
         this.membersStore = membersStore;
         this.actionTypesStore = actionTypesStore;

@@ -12,8 +12,8 @@ class AwardStoreTest {
     private final AwardStore awardStore;
     public AwardStoreTest() {
         String accountId = "test-account";
-        this.rewardStore = new RewardStore();
-        var ziqniStores = new ZiqniStores(accountId);
+        this.rewardStore = new RewardStore(StoreContext.StandAlone());
+        var ziqniStores = new ZiqniStores(accountId,StoreContext.StandAlone());
         ziqniStores.generateSampleData();
         this.awardStore = ziqniStores.awardStore;
     }

@@ -31,7 +31,7 @@ public class AchievementsStore implements AsyncCacheLoader<@NonNull String, @Non
             .executor(ZiqniExecutors.GlobalZiqniCachesExecutor)
             .buildAsync(this);
 
-    public AchievementsStore(String accountId) {
+    public AchievementsStore(StoreContext context) {
     }
 
     public CompletableFuture<Optional<BasicAchievement>> getAchievement(String id) {
