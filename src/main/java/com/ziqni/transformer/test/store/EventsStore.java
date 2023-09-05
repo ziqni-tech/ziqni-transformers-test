@@ -2,14 +2,17 @@ package com.ziqni.transformer.test.store;
 
 import com.github.benmanes.caffeine.cache.*;
 import com.ziqni.admin.sdk.model.EntityType;
+import com.ziqni.admin.sdk.model.Member;
 import com.ziqni.admin.sdk.model.ModelApiResponse;
 import com.ziqni.admin.sdk.model.Result;
 import com.ziqni.transformer.test.concurrent.ZiqniConcurrentHashMap;
 import com.ziqni.transformer.test.concurrent.ZiqniExecutors;
+import com.ziqni.transformer.test.models.ZiqniMember;
 import com.ziqni.transformer.test.utils.ScalaUtils;
-import com.ziqni.transformers.domain.BasicEventModel;
+import com.ziqni.transformers.domain.ZiqniEvent;
 import lombok.NonNull;
 import org.joda.time.DateTime;
+import scala.None;
 import scala.Option;
 import scala.Some;
 
@@ -21,6 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import scala.collection.immutable.Map$;
+import scala.collection.immutable.Seq$;
 
 public class EventsStore implements CacheLoader<@NonNull String, EventsStore.EventTransaction>, RemovalListener<@NonNull String, EventsStore.EventTransaction> {
 
@@ -39,7 +43,7 @@ public class EventsStore implements CacheLoader<@NonNull String, EventsStore.Eve
             .executor(ZiqniExecutors.GlobalZiqniCachesExecutor)
             .evictionListener(this).buildAsync(this);
 
-    private final ZiqniConcurrentHashMap<String, List<BasicEventModel>> batchIdCache = new ZiqniConcurrentHashMap<>();
+    private final ZiqniConcurrentHashMap<String, List<ZiqniEvent>> batchIdCache = new ZiqniConcurrentHashMap<>();
 
     @Override
     public @Nullable EventsStore.EventTransaction load(@NonNull String key) throws Exception {
@@ -52,42 +56,40 @@ public class EventsStore implements CacheLoader<@NonNull String, EventsStore.Eve
         this.actionTypesStore = actionTypesStore;
     }
 
-    public CompletableFuture<ModelApiResponse> pushEvent(BasicEventModel basicEventModel) {
-        return pushEvent(List.of(basicEventModel));
+    public CompletableFuture<ModelApiResponse> pushEvent(ZiqniEvent basicEvent) {
+        return pushEvent(List.of(basicEvent));
     }
 
-    public CompletableFuture<ModelApiResponse> pushEvent(List<BasicEventModel> basicEventModels) {
+    public CompletableFuture<ModelApiResponse> pushEvent(List<ZiqniEvent> basicEvents) {
         var response = new ModelApiResponse();
-        basicEventModels.forEach(x -> {
+        basicEvents.forEach(x -> {
             pushEvent(x, response);
         });
 
         return CompletableFuture.completedFuture(response);
     }
 
-    public CompletableFuture<ModelApiResponse> pushEventTransaction(BasicEventModel basicEventModel) {
+    public CompletableFuture<ModelApiResponse> pushEventTransaction(ZiqniEvent basicEvent) {
         var response = new ModelApiResponse();
-        pushEvent(basicEventModel, response);
+        pushEvent(basicEvent, response);
 
         return CompletableFuture.completedFuture(response);
     }
 
-    public CompletableFuture<List<BasicEventModel>> findByBatchId(String batchId) {
+    public CompletableFuture<List<ZiqniEvent>> findByBatchId(String batchId) {
         return CompletableFuture.completedFuture(batchIdCache.get(batchId));
 
     }
 
-    private void pushEvent(BasicEventModel basicEventModel, ModelApiResponse response) {
-        if (basicEventModel.action().equalsIgnoreCase(EntityType.MEMBER.getValue())){
-            CompletableFuture<Optional<String>> createdMember = membersStore.create(basicEventModel.memberRefId(), "member-" + identifierCounter, basicEventModel.tags(), null);
-            createdMember.thenAccept(y -> {
-                y.ifPresent(z -> {
-                    response.addResultsItem(new Result().id(z));
-                });
-            });
+    private void pushEvent(ZiqniEvent basicEvent, ModelApiResponse response) {
+        if (basicEvent.action().equalsIgnoreCase(EntityType.MEMBER.getValue())){
+            CompletableFuture<ZiqniMember> createdMember = membersStore.create(basicEvent.memberRefId(), "member-" + identifierCounter, basicEvent.tags(), Map$.MODULE$.empty());
+            createdMember.thenAccept(y ->
+                response.addResultsItem(new Result().id(y.getMemberId()))
+            );
 
-        } else if (basicEventModel.action().equalsIgnoreCase(EntityType.PRODUCT.getValue())) {
-            CompletableFuture<Optional<String>> createdProduct = productsStore.create(basicEventModel.entityRefId(), "product-" + identifierCounter, null, null, null, null);
+        } else if (basicEvent.action().equalsIgnoreCase(EntityType.PRODUCT.getValue())) {
+            CompletableFuture<Optional<String>> createdProduct = productsStore.create(basicEvent.entityRefId(), "product-" + identifierCounter, ScalaUtils.emptySeqString, null, null, Map$.MODULE$.empty());
             createdProduct.thenAccept(y -> {
                 y.ifPresent(z -> {
                     response.addResultsItem(new Result().id(z));
@@ -96,14 +98,14 @@ public class EventsStore implements CacheLoader<@NonNull String, EventsStore.Eve
         }
 
         final var eventTransaction = new EventTransaction();
-        eventTransaction.addBasicEvent(basicEventModel);
+        eventTransaction.addZiqniEvent(basicEvent);
 
-        basicEventModel.batchId().map(batchId ->
+        basicEvent.batchId().map(batchId ->
                 batchIdCache.put(batchId, eventTransaction.getEvents())
         );
 
-        this.cache.put(basicEventModel.eventRefId(), CompletableFuture.completedFuture(eventTransaction));
-        response.addResultsItem(new Result().id(basicEventModel.eventRefId()));
+        this.cache.put(basicEvent.eventRefId(), CompletableFuture.completedFuture(eventTransaction));
+        response.addResultsItem(new Result().id(basicEvent.eventRefId()));
 
     }
 
@@ -114,15 +116,13 @@ public class EventsStore implements CacheLoader<@NonNull String, EventsStore.Eve
         AtomicReference<String> action = new AtomicReference<>();
         var testEventName = new Some<>("test-event" + 1);
         final var createdMember = membersStore.create(memberRefId, "member-" + identifierCounter,  ScalaUtils.emptySeqString, Option.empty());
-        createdMember.thenAccept(y -> {
-            y.ifPresent(memberId::set);
-        });
+        createdMember.thenAccept(member -> memberId.set(member.getMemberId()));
         final var createdActionType = actionTypesStore.create("test-event", testEventName, Option.empty(), null);
         createdActionType.thenAccept(y -> {
             y.ifPresent(z -> action.set(z.getExternalReference()));
         });
         String batchId = "batch-" + identifierCounter;
-        eventTrans.addBasicEvent(new BasicEventModel(new Some<>(memberId.get()), memberRefId, "ref-id-"+identifierCounter, "event-ref-id" + identifierCounter, new Some<>(batchId), action.get(), 2.0, DateTime.now(),  ScalaUtils.emptySeqString, Map$.MODULE$.empty()));
+        eventTrans.addZiqniEvent(new ZiqniEvent(new Some<>(memberId.get()), memberRefId, "ref-id-"+identifierCounter, "event-ref-id" + identifierCounter, new Some<>(batchId), action.get(), 2.0, DateTime.now(),  ScalaUtils.emptySeqString, Map$.MODULE$.empty()), Option.empty());
         this.batchIdCache.put(batchId, eventTrans.getEvents());
         return eventTrans;
     }
@@ -134,13 +134,13 @@ public class EventsStore implements CacheLoader<@NonNull String, EventsStore.Eve
 
 
     public static class EventTransaction {
-        private final List<BasicEventModel> buffer = new ArrayList<>();
+        private final List<ZiqniEvent> buffer = new ArrayList<>();
 
-        public boolean addBasicEvent(BasicEventModel e) {
+        public boolean addZiqniEvent(ZiqniEvent e) {
             return buffer.add(e);
         }
 
-        public List<BasicEventModel> getEvents() {
+        public List<ZiqniEvent> getEvents() {
             return buffer;
         }
     }

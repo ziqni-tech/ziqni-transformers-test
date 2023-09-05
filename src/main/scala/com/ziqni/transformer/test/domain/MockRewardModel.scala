@@ -3,9 +3,9 @@
  */
 package com.ziqni.transformer.test.domain
 
-import com.ziqni.transformers.domain.BasicRewardModel
+import com.ziqni.transformers.domain.{CustomFieldEntry, ZiqniReward}
 
-class MockRewardModel(
+class MockReward(
 						 entityId: String,
 						 entityType: String,
 						 rank: String,
@@ -18,7 +18,7 @@ class MockRewardModel(
 						 rewardTypeKey: String,
 						 var rewardMetaData: Option[Map[String, String]],
 						 rewardId: String
-					) extends BasicRewardModel {
+					) extends com.ziqni.transformers.domain.ZiqniReward {
 
 	override def getEntityId: String = entityId
 
@@ -44,6 +44,7 @@ class MockRewardModel(
 
 	override def setMetaData(metadata: Map[String, String]): Unit = this.rewardMetaData = Option(metadata)
 
-	override def getClRewardId: String = rewardId
+	override def getRewardId: String = rewardId
 
+	override def getCustomFields: Map[String, CustomFieldEntry[_]] = ???
 }

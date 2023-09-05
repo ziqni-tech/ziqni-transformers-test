@@ -1,9 +1,9 @@
 package com.ziqni.transformer.test.models
 
 import com.ziqni.admin.sdk.model.Award
-import com.ziqni.transformers.domain.BasicAwardModel
+import com.ziqni.transformers.domain.ZiqniAward
 
-case class BasicAward(award: Award) extends BasicAwardModel with BasicModelHelper {
+case class ZiqniAward(award: Award) extends com.ziqni.transformers.domain.ZiqniAward with ZiqniHelper {
 
 	override def getEntityId: EntityId = award.getEntityId
 
@@ -11,7 +11,7 @@ case class BasicAward(award: Award) extends BasicAwardModel with BasicModelHelpe
 
 	override def getMemberId: MemberId = award.getMemberId
 
-	override def getClAwardId: AwardId = award.getId
+	override def getAwardId: AwardId = award.getId
 
 	override def getRewardRank: String = award.getRewardRank
 
@@ -33,4 +33,6 @@ case class BasicAward(award: Award) extends BasicAwardModel with BasicModelHelpe
 
 		false
 	}//award.claimed
+
+
 }

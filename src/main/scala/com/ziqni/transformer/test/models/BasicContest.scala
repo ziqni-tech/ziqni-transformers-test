@@ -2,13 +2,15 @@ package com.ziqni.transformer.test.models
 
 import com.typesafe.scalalogging.LazyLogging
 import com.ziqni.admin.sdk.model.Contest
-import com.ziqni.transformers.domain.BasicContestModel
+import com.ziqni.transformers.domain
+import com.ziqni.transformers.domain.ZiqniContest
 import org.joda.time.DateTime
 
 import java.time.OffsetDateTime
+import scala.jdk.CollectionConverters.MapHasAsScala
 import scala.language.implicitConversions
 
-case class BasicContest(contest: Contest) extends BasicContestModel with LazyLogging with BasicModelHelper {
+case class ZiqniContest(contest: Contest) extends com.ziqni.transformers.domain.ZiqniContest with LazyLogging with ZiqniHelper {
 
 	implicit private def offsetDateTimeToDateTime(t: OffsetDateTime): DateTime = new DateTime(t)
 	implicit private def offsetDateTimeToDateTimeOpt(t: Option[OffsetDateTime]): Option[DateTime] = t.map(new DateTime(_))
@@ -23,7 +25,7 @@ case class BasicContest(contest: Contest) extends BasicContestModel with LazyLog
 
 	override def getCreatedTime: DateTime = contest.getCreated
 
-	override def getClContestId: String = contest.getId
+	override def getContestId: String = contest.getId
 
 	override def getProductRefIds: Option[Array[String]] = None //Option(contest.options.products.map(_.productRefId).toArray)
 
@@ -69,4 +71,6 @@ case class BasicContest(contest: Contest) extends BasicContestModel with LazyLog
 		//TODO - create account message for after status update
 		//			CreateAccountMessage.create()
 	}
+
+	override def getCustomFields: Map[String, domain.CustomFieldEntry[_]] = convertCustomFields(contest.getCustomFields.asScala.toMap)
 }

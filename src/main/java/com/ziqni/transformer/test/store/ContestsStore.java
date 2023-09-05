@@ -3,7 +3,8 @@ package com.ziqni.transformer.test.store;
 import com.github.benmanes.caffeine.cache.*;
 import com.ziqni.admin.sdk.model.*;
 import com.ziqni.transformer.test.concurrent.ZiqniExecutors;
-import com.ziqni.transformer.test.models.BasicContest;
+import com.ziqni.transformer.test.models.ZiqniContest;
+import com.ziqni.transformers.ZiqniNotFoundException;
 import lombok.NonNull;
 
 import javax.annotation.Nullable;
@@ -30,8 +31,8 @@ public class ContestsStore implements AsyncCacheLoader<@NonNull String, @NonNull
     public ContestsStore(StoreContext context) {
     }
 
-    public CompletableFuture<Optional<BasicContest>> getBasicContestModel(String id) {
-        return getContest(id).thenApply(contest -> contest.map(BasicContest::apply));
+    public CompletableFuture<ZiqniContest> getZiqniContest(String id) {
+        return getContest(id).thenApply(contest -> contest.map(ZiqniContest::apply).orElseThrow( () -> new ZiqniNotFoundException("ZiqniContest",id,false)));
     }
 
     public CompletableFuture<Optional<Contest>> getContest(String id) {
@@ -64,7 +65,7 @@ public class ContestsStore implements AsyncCacheLoader<@NonNull String, @NonNull
                 .minNumberOfEntrants(1)
                 .scheduledStartDate(OffsetDateTime.now())
                 .scheduledEndDate(OffsetDateTime.now().plusDays(1))
-                .strategies(new Strategy().rankingStrategy(new RankingStrategy().addConstraintsItem("test-ranking-strategy")))
+                .strategies(new TournamentStrategies().rankingStrategy(new RankingStrategy().addConstraintsItem("test-ranking-strategy")))
                 .status(ContestStatus.ACTIVE)
                 .addConstraintsItem("test-constraint");
     }

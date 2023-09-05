@@ -4,6 +4,7 @@ import com.ziqni.transformer.test.utils.ScalaUtils;
 import org.junit.jupiter.api.Test;
 import scala.Option;
 import scala.Some;
+import scala.collection.immutable.Map$;
 
 import java.util.concurrent.ExecutionException;
 
@@ -22,26 +23,25 @@ class MembersStoreTest {
 
     @Test
     void getIdByReferenceId() throws ExecutionException, InterruptedException {
-        membersStore.create("test-member-ref-id-new-1", "test-member", ScalaUtils.emptySeqString, Option.empty()).join();
-        final var contestModel = membersStore.getIdByReferenceId("test-member-ref-id-new-1");
-        contestModel.join();
-        assertNotNull(contestModel);
-        assertNotNull(contestModel.get());
-        assertTrue(contestModel.get().isPresent());
+        membersStore.create("test-member-ref-id-new-1", "test-member", ScalaUtils.emptySeqString, Map$.MODULE$.empty()).join();
+        final var member = membersStore.getMemberByReferenceId("test-member-ref-id-new-1");
+        member.join();
+        assertNotNull(member);
+        assertNotNull(member.get());
     }
 
     @Test
     void getRefIdByMemberId() throws ExecutionException, InterruptedException {
-        final var contestModel = membersStore.getRefIdByMemberId("memb-1");
-        contestModel.join();
-        assertNotNull(contestModel);
-        assertNotNull(contestModel.get());
-        assertNotNull(contestModel.get());
+        final var contest = membersStore.getRefIdByMemberId("memb-1");
+        contest.join();
+        assertNotNull(contest);
+        assertNotNull(contest.get());
+        assertNotNull(contest.get());
     }
 
     @Test
     void create() throws ExecutionException, InterruptedException {
-        final var member = membersStore.create("test-member-ref-id-1", "test-member", ScalaUtils.emptySeqString, Option.empty());
+        final var member = membersStore.create("test-member-ref-id-1", "test-member", ScalaUtils.emptySeqString, Map$.MODULE$.empty());
         member.join();
         assertNotNull(member);
         assertNotNull(member.get());
@@ -49,7 +49,7 @@ class MembersStoreTest {
 
     @Test
     void update() throws ExecutionException, InterruptedException {
-        final var member = membersStore.update("memb-1" ,new Some<>("test-member-ref-id-1"), new Some<>("test-member"), Option.empty(), Option.empty());
+        final var member = membersStore.update("memb-1" ,new Some<>("test-member-ref-id-1"), new Some<>("test-member"), Option.empty());
         assertFalse(member.isCompletedExceptionally());
         member.join();
         assertNotNull(member);
@@ -57,12 +57,12 @@ class MembersStoreTest {
     }
 
     @Test
-    void findBasicMemberModelById() throws ExecutionException, InterruptedException {
-        final var contestModel = membersStore.findBasicMemberModelById("memb-1");
-        contestModel.join();
-        assertNotNull(contestModel);
-        assertNotNull(contestModel.get());
-        assertNotNull(contestModel.get().get());
+    void findZiqniMemberById() throws ExecutionException, InterruptedException {
+        final var contest = membersStore.findZiqniMemberById("memb-1");
+        contest.join();
+        assertNotNull(contest);
+        assertNotNull(contest.get());
+        assertNotNull(contest.get().get());
     }
 
     @Test

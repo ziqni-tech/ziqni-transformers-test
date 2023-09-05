@@ -4,8 +4,8 @@ import com.ziqni.admin.sdk.model.Result;
 import com.ziqni.admin.sdk.model.Reward;
 import com.ziqni.admin.sdk.model.UnitOfMeasure;
 import com.ziqni.admin.sdk.model.UnitOfMeasureType;
-import com.ziqni.transformer.test.models.BasicReward;
-import com.ziqni.transformer.test.models.BasicUnitOfMeasure;
+import com.ziqni.transformer.test.models.ZiqniReward;
+import com.ziqni.transformer.test.models.ZiqniUnitOfMeasure;
 import org.junit.jupiter.api.Test;
 import scala.None;
 import scala.Option;
@@ -26,9 +26,9 @@ class UnitsOfMeasureStoreTest {
     }
 
     @Test
-    void getBasicUnitOfMeasure() {
-        final var unitOfMeasure = unitsOfMeasureStore.getBasicUnitOfMeasure("prod-1");
-        Optional<BasicUnitOfMeasure> basicUnitOfMeasure = unitOfMeasure.join();
+    void getZiqniUnitOfMeasure() {
+        final var unitOfMeasure = unitsOfMeasureStore.getZiqniUnitOfMeasure("prod-1");
+        Optional<ZiqniUnitOfMeasure> basicUnitOfMeasure = unitOfMeasure.join();
         assertNotNull(basicUnitOfMeasure);
         assertNotNull(basicUnitOfMeasure.get());
         assertNotNull(basicUnitOfMeasure.get().getUnitOfMeasureKey());

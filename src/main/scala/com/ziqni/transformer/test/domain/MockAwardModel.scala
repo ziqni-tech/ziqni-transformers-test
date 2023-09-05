@@ -4,9 +4,9 @@
 
 package com.ziqni.transformer.test.domain
 
-import com.ziqni.transformers.domain.BasicAwardModel
+import com.ziqni.transformers.domain.ZiqniAward
 
-class MockAwardModel(
+class MockAward(
 						entityId: String,
 						entityType: String,
 						memberId: String,
@@ -20,7 +20,7 @@ class MockAwardModel(
 						rewardTypeId: String,
 						rewardId: String,
 						rewardMetaData: Option[Map[String, String]]
-					) extends BasicAwardModel {
+					) extends com.ziqni.transformers.domain.ZiqniAward {
 
 	override def getEntityId: String = entityId
 
@@ -30,7 +30,7 @@ class MockAwardModel(
 
 	override def claimed: Boolean = isClaimed
 
-	override def getClAwardId: String = awardId
+	override def getAwardId: String = awardId
 
 	override def getRewardRank: String = rewardRank
 

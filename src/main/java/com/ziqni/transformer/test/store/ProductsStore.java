@@ -9,12 +9,15 @@ import com.ziqni.admin.sdk.model.Product;
 import com.ziqni.admin.sdk.model.Result;
 import com.ziqni.transformer.test.concurrent.ZiqniConcurrentHashMap;
 import com.ziqni.transformer.test.concurrent.ZiqniExecutors;
-import com.ziqni.transformer.test.models.BasicProduct;
+import com.ziqni.transformer.test.models.ZiqniProduct;
+import com.ziqni.transformers.ZiqniNotFoundException;
+import com.ziqni.transformers.domain.CreateProductRequest;
 import lombok.NonNull;
 import scala.Option;
 import scala.collection.JavaConverters;
 
 import scala.collection.Seq;
+import scala.concurrent.Future;
 
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
@@ -25,6 +28,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class ProductsStore implements AsyncCacheLoader<@NonNull String, @NonNull Product>, RemovalListener<@NonNull String, @NonNull Product> {
 
@@ -42,42 +47,65 @@ public class ProductsStore implements AsyncCacheLoader<@NonNull String, @NonNull
                 .buildAsync(this);
     }
 
-    public CompletableFuture<Optional<String>> getIdByReferenceId(String productRefId) {
-        return cache.get(productRefId).thenApply(x -> Optional.of(x.getProductRefId()));
+    public CompletableFuture<ZiqniProduct> getByReferenceId(String productRefId) {
+        return Optional.of(refIdCache.get(productRefId)).map(s -> findZiqniProductById(s)).orElseThrow(() -> new ZiqniNotFoundException("ZiqniProduct",productRefId,true));
     }
 
     public CompletableFuture<String> getRefIdByProductId(String productId) {
         return cache.get(productId).thenApply(Product::getProductRefId);
     }
 
-    public CompletableFuture<Optional<BasicProduct>> findBasicProductModelById(String productId) {
+    public CompletableFuture<ZiqniProduct> findZiqniProductById(String productId) {
         return cache.get(productId)
                 .thenApply(Optional::ofNullable)
-                .thenApply(x -> x.map(BasicProduct::apply));
+                .thenApply(x -> x.map(ZiqniProduct::apply).orElseThrow( () -> new ZiqniNotFoundException("ZiqniProduct",productId,false) ))
+                ;
     }
 
-    public CompletableFuture<Optional<String>> create(String productRefId, String displayName, Seq<String> providers, String productType, Double defaultAdjustmentFactor, Option<scala.collection.Map<String, String>> metaData) {
-        final var out = new CompletableFuture<Optional<String>>();
+    public CompletableFuture<com.ziqni.transformers.domain.ZiqniProduct> create(String productRefId, String displayName, Seq<String> tags, String productType, Double defaultAdjustmentFactor, scala.collection.Map<String, String> metaData) {
+        final var out = new CompletableFuture<com.ziqni.transformers.domain.ZiqniProduct>();
         if(this.refIdCache.containsKey(productRefId))
             out.completeExceptionally(new ApiException("product_ref_id_already_exists")); // or whatever we throw
         else {
-            final var providersToCreate = JavaConverters.seqAsJavaList(providers);
-            final Map<String,String> metadata = metaData.isEmpty() ? Map.of() : JavaConverters.mapAsJavaMap(metaData.get());
+            final var providersToCreate = JavaConverters.seqAsJavaList(tags);
+            final Map<String,String> metadataOut = metaData.isEmpty() ? Map.of() : JavaConverters.mapAsJavaMap(metaData);
             final var product = makeMock()
                     .name(displayName)
+                    .productRefId(productRefId)
+//                    .actionTypeAdjustmentFactors(defaultAdjustmentFactor)
+                    .metadata(metadataOut);
+            this.cache.put(product.getId(), CompletableFuture.completedFuture(product));
+            this.refIdCache.put(product.getProductRefId(), product.getId());
+            out.complete(new ZiqniProduct(product));
+        }
+
+        return out;
+
+    }
+
+    public CompletableFuture<com.ziqni.transformers.domain.ZiqniProduct> getOrCreateProduct(String productRefId, Supplier<CreateProductRequest> createAs, Function<com.ziqni.transformers.domain.ZiqniProduct, Future<com.ziqni.transformers.domain.ZiqniProduct>> onExist) {
+        final var out = new CompletableFuture<com.ziqni.transformers.domain.ZiqniProduct>();
+        if(this.refIdCache.containsKey(productRefId))
+            out.completeExceptionally(new ApiException("product_ref_id_already_exists")); // or whatever we throw
+        else {
+            final var toCreate = createAs.get();
+            final var providersToCreate = JavaConverters.seqAsJavaList(toCreate.tags());
+            final Map<String,String> metadata = toCreate.metadata().isEmpty() ? Map.of() : JavaConverters.mapAsJavaMap(toCreate.metadata());
+            final var product = makeMock()
+                    .name(toCreate.displayName())
                     .productRefId(productRefId)
 //                    .actionTypeAdjustmentFactors(defaultAdjustmentFactor)
                     .metadata(metadata);
             this.cache.put(product.getId(), CompletableFuture.completedFuture(product));
             this.refIdCache.put(product.getProductRefId(), product.getId());
-            out.complete(Optional.of(product.getId()));
+            out.complete(new ZiqniProduct(product));
         }
 
         return out;
     }
 
-    public CompletableFuture<Optional<Result>> update(String productId, Option<String> productRefId, Option<String> displayName, Option<Seq<String>> providers, Option<String> productType, Option<Double> defaultAdjustmentFactor, Option<scala.collection.Map<String, String>> metaData) {
-        final var out = new CompletableFuture<Optional<Result>>();
+    public CompletableFuture<ZiqniProduct> update(String productId, Option<String> productRefId, Option<String> displayName, Option<Seq<String>> providers, Option<String> productType, Option<Double> defaultAdjustmentFactor, Option<scala.collection.Map<String, String>> metaData) {
+        final var out = new CompletableFuture<ZiqniProduct>();
         var isNotInCache = Objects.isNull(this.cache.getIfPresent(productId));
         if (isNotInCache)
             out.completeExceptionally(new ApiException("product_with_id_[" + productId + "]_does_not_exist")); // or whatever we throw
@@ -93,10 +121,7 @@ public class ProductsStore implements AsyncCacheLoader<@NonNull String, @NonNull
                         if (Objects.nonNull(metaData) && !metaData.isEmpty())
                             x.metadata(JavaConverters.mapAsJavaMap(metaData.get()));
 
-                        out.complete(Optional.of(new Result()
-                                .id(x.getId())
-                                .result("UPDATED")
-                                .externalReference(x.getProductRefId())));
+                        out.complete(new ZiqniProduct(x));
                     });
 
         }
@@ -134,7 +159,7 @@ public class ProductsStore implements AsyncCacheLoader<@NonNull String, @NonNull
     }
 
     @Override
-    public void onRemoval(@Nullable @NonNull String key, @Nullable @NonNull Product value, RemovalCause cause) {
+    public void onRemoval(@NonNull String key, @NonNull Product value, RemovalCause cause) {
 
     }
 

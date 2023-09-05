@@ -3,7 +3,8 @@ package com.ziqni.transformer.test.store;
 import com.github.benmanes.caffeine.cache.*;
 import com.ziqni.admin.sdk.model.*;
 import com.ziqni.transformer.test.concurrent.ZiqniExecutors;
-import com.ziqni.transformer.test.models.BasicAchievement;
+import com.ziqni.transformer.test.models.ZiqniAchievement;
+import com.ziqni.transformers.ZiqniNotFoundException;
 import lombok.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
@@ -34,8 +35,8 @@ public class AchievementsStore implements AsyncCacheLoader<@NonNull String, @Non
     public AchievementsStore(StoreContext context) {
     }
 
-    public CompletableFuture<Optional<BasicAchievement>> getAchievement(String id) {
-        return findAchievementById(id).thenApply(achievement -> achievement.map(BasicAchievement::apply));
+    public CompletableFuture<ZiqniAchievement> getAchievement(String id) {
+        return findAchievementById(id).thenApply(achievement -> achievement.map(ZiqniAchievement::apply).orElseThrow(() -> new ZiqniNotFoundException("ZiqniAchievement",id,false)));
     }
 
     public CompletableFuture<Optional<Achievement>> findAchievementById(String id) {
@@ -48,7 +49,7 @@ public class AchievementsStore implements AsyncCacheLoader<@NonNull String, @Non
     }
 
     @Override
-    public void onRemoval(@Nullable @NonNull String key, @Nullable @NonNull Achievement value, RemovalCause cause) {
+    public void onRemoval(@NonNull String key, @NonNull Achievement value, RemovalCause cause) {
 
     }
 

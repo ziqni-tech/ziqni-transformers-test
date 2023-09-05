@@ -1,7 +1,7 @@
 package com.ziqni.transformer.test.api
 
 import com.ziqni.transformers.ZiqniContext.SpaceName
-import com.ziqni.transformers.domain.BasicAccount
+import com.ziqni.transformers.domain.ZiqniAccount
 import com.ziqni.transformers._
 
 import scala.concurrent.ExecutionContextExecutor
@@ -14,9 +14,9 @@ case class ZiqniContextExt(_accountId: String,
                            _ziqniApiHttp: ZiqniApiHttp,
                            _ziqniTransformerEventBus: Option[ZiqniTransformerEventBus],
                            _ziqniExecutionContext: ExecutionContextExecutor,
-                           _ziqniSubAccounts: Seq[BasicAccount],
+                           _ziqniSubAccounts: Seq[ZiqniAccount],
                            _ziqniSubAccountApiAsync: SpaceName => ZiqniApiAsync
-                          ) extends ZiqniContext {
+                          ) extends com.ziqni.transformers.ZiqniContext {
   override def accountId: String = _accountId
 
   override def spaceName: String = _spaceName
@@ -33,7 +33,13 @@ case class ZiqniContextExt(_accountId: String,
 
   override def ziqniExecutionContext: ExecutionContextExecutor = _ziqniExecutionContext
 
-  override def ziqniSubAccounts: Seq[BasicAccount] = _ziqniSubAccounts
+  override def ziqniSubAccounts: Seq[ZiqniAccount] = _ziqniSubAccounts
 
   override def ziqniSubAccountApiAsync(spaceName: SpaceName): ZiqniApiAsync = _ziqniSubAccountApiAsync.apply(spaceName)
+
+  override def ziqniConnectionParameterKeys(): Set[String] = ???
+
+  override def ziqniConnectionParameter(connectionParameterKey: String): Option[AnyRef] = ???
+
+  override def ziqniSystemLogWriter(message: String, throwable: Throwable, logLevel: LogLevel): Unit = ???
 }

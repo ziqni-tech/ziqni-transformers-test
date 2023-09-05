@@ -3,16 +3,12 @@ package com.ziqni.transformer.test.store;
 import com.github.benmanes.caffeine.cache.*;
 import com.ziqni.admin.sdk.model.*;
 import com.ziqni.transformer.test.concurrent.ZiqniExecutors;
-import com.ziqni.transformer.test.models.BasicAward;
+import com.ziqni.transformer.test.models.ZiqniAward;
 import lombok.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
@@ -37,12 +33,12 @@ public class AwardStore implements AsyncCacheLoader<@NonNull String, @NonNull Aw
         this.rewardStore = rewardStore;
     }
 
-    public CompletableFuture<Optional<BasicAward>> getBasicAward(String id){
-        return getAward(id).thenApply(x-> x.map(BasicAward::apply));
+    public CompletableFuture<com.ziqni.transformer.test.models.ZiqniAward> getZiqniAward(String id){
+        return getAward(id).thenApply(ZiqniAward::apply);
     }
 
-    public CompletableFuture<Optional<Award>> getAward(String id){
-        return cache.get(id).thenApply(Optional::ofNullable);
+    public CompletableFuture<Award> getAward(String id){
+        return cache.get(id);
     }
 
     public Award makeMock(Reward reward){
@@ -74,7 +70,7 @@ public class AwardStore implements AsyncCacheLoader<@NonNull String, @NonNull Aw
     }
 
     @Override
-    public void onRemoval(@Nullable @NonNull String key, @Nullable @NonNull Award value, RemovalCause cause) {
+    public void onRemoval(@NonNull String key, @NonNull Award value, RemovalCause cause) {
 
     }
 }

@@ -21,23 +21,23 @@ class ContestsStoreTest {
     }
 
     @Test
-    void getBasicContestModel() throws ExecutionException, InterruptedException {
-        final var contestModel = contestsStore.getBasicContestModel("cont-1");
-        contestModel.join();
-        assertNotNull(contestModel);
-        assertNotNull(contestModel.get());
-        assertNotNull(contestModel.get().get());
-        assertNotNull(contestModel.get().get().getName());
+    void getZiqniContest() throws ExecutionException, InterruptedException {
+        final var contest = contestsStore.getZiqniContest("cont-1");
+        contest.join();
+        assertNotNull(contest);
+        assertNotNull(contest.get());
+        assertNotNull(contest.get().get());
+        assertNotNull(contest.get().get().getName());
     }
 
     @Test
     void getContest() throws ExecutionException, InterruptedException {
-        final var contestModel = contestsStore.getContest("cont-1");
-        contestModel.join();
-        assertNotNull(contestModel);
-        assertNotNull(contestModel.get());
-        assertNotNull(contestModel.get().get());
-        assertNotNull(contestModel.get().get().getName());
+        final var contest = contestsStore.getContest("cont-1");
+        contest.join();
+        assertNotNull(contest);
+        assertNotNull(contest.get());
+        assertNotNull(contest.get().get());
+        assertNotNull(contest.get().get().getName());
     }
 
     @Test
@@ -45,12 +45,12 @@ class ContestsStoreTest {
         String contestId = "contest-test-1";
         contestsStore.put(new Contest().id(contestId).name("testName"));
 
-        final var contestModel = contestsStore.getBasicContestModel(contestId);
-        contestModel.join();
-        assertNotNull(contestModel);
-        assertNotNull(contestModel.get());
-        assertNotNull(contestModel.get().get());
-        assertNotNull(contestModel.get().get().getName());
+        final var contest = contestsStore.getZiqniContest(contestId);
+        contest.join();
+        assertNotNull(contest);
+        assertNotNull(contest.get());
+        assertNotNull(contest.get().get());
+        assertNotNull(contest.get().get().getName());
     }
 
     @Test

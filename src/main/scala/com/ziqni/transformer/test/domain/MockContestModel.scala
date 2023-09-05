@@ -3,10 +3,10 @@
  */
 package com.ziqni.transformer.test.domain
 
-import com.ziqni.transformers.domain.BasicContestModel
+import com.ziqni.transformers.domain.{CustomFieldEntry, ZiqniContest}
 import org.joda.time.DateTime
 
-class MockContestModel extends BasicContestModel{
+class MockContest extends com.ziqni.transformers.domain.ZiqniContest{
 	val name = "test"
 
 	override def getName: String = name
@@ -19,7 +19,7 @@ class MockContestModel extends BasicContestModel{
 
 	override def getCreatedTime: DateTime = DateTime.now()
 
-	override def getClContestId: String = ""
+	override def getContestId: String = ""
 
 	override def getProductRefIds: Option[Array[String]] = None
 
@@ -32,4 +32,6 @@ class MockContestModel extends BasicContestModel{
 	override def setMetaData(metadata: Map[String, String]): Unit = None
 
 	override def setStatus(): Unit = None
+
+	override def getCustomFields: Map[String, CustomFieldEntry[_]] = ???
 }

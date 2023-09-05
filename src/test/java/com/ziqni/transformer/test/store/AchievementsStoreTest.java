@@ -1,6 +1,6 @@
 package com.ziqni.transformer.test.store;
 
-import com.ziqni.transformer.test.models.BasicAchievement;
+import com.ziqni.transformer.test.models.ZiqniAchievement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;

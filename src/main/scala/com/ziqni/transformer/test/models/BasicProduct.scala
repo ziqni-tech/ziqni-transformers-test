@@ -1,10 +1,11 @@
 package com.ziqni.transformer.test.models
 
-import com.ziqni.transformers.domain.BasicProductModel
+import com.ziqni.transformers.domain
+import com.ziqni.transformers.domain.ZiqniProduct
 
-import scala.jdk.CollectionConverters.ListHasAsScala
+import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsScala}
 
-case class BasicProduct(product: com.ziqni.admin.sdk.model.Product) extends BasicProductModel with BasicModelHelper {
+case class ZiqniProduct(product: com.ziqni.admin.sdk.model.Product) extends com.ziqni.transformers.domain.ZiqniProduct with ZiqniHelper {
 
 	override def getProductReferenceId: ProductRefId = product.getProductRefId
 
@@ -16,7 +17,9 @@ case class BasicProduct(product: com.ziqni.admin.sdk.model.Product) extends Basi
 
 	override def getDefaultAdjustmentFactor: Option[Double] = Option(product.getAdjustmentFactor).map(_.toDouble)
 
-	override def getClProductId: ProductId = product.getId
+	override def getProductId: ProductId = product.getId
 
 	override def getMetaData: Option[Map[String, String]] = product.getMetadata
+
+	override def getCustomFields: Map[String, domain.CustomFieldEntry[_]] = convertCustomFields(product.getCustomFields.asScala.toMap)
 }

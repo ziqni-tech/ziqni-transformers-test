@@ -2,14 +2,14 @@ package com.ziqni.transformer.test.models
 
 import com.typesafe.scalalogging.LazyLogging
 import com.ziqni.admin.sdk.model._
-import com.ziqni.transformers.domain.BasicAchievementModel
+import com.ziqni.transformers.domain
 import org.joda.time.DateTime
 
 import java.time.OffsetDateTime
 import scala.jdk.CollectionConverters._
 import scala.language.implicitConversions
 
-case class BasicAchievement(achievement: Achievement) extends BasicAchievementModel with LazyLogging with BasicModelHelper {
+case class ZiqniAchievement(achievement: Achievement) extends com.ziqni.transformers.domain.ZiqniAchievement with LazyLogging with ZiqniHelper {
 	implicit private def stringToOption(s: String): Option[String] = Option(s)
 	implicit private def offsetDateTimeToDateTime(t: OffsetDateTime): DateTime = new DateTime(t)
 	implicit private def offsetDateTimeToDateTimeOpt(t: Option[OffsetDateTime]): Option[DateTime] = t.map(new DateTime(_))
@@ -28,7 +28,7 @@ case class BasicAchievement(achievement: Achievement) extends BasicAchievementMo
 
 	override def getCreatedTime: DateTime = Option(achievement.getCreated).map(t =>new DateTime(t.toInstant.toEpochMilli)).getOrElse(DateTime.now())
 
-	override def getClAchievementId: String = achievement.getId
+	override def getAchievementId: String = achievement.getId
 
 	//TODO - clean me - this is BAD!
 	override def getProductRefIds: Option[Array[String]] = {
@@ -89,4 +89,6 @@ case class BasicAchievement(achievement: Achievement) extends BasicAchievementMo
 		//      }
 		//    })
 	}
+
+	override def getCustomFields: Map[String, domain.CustomFieldEntry[_]] = convertCustomFields(achievement.getCustomFields.asScala.toMap)
 }

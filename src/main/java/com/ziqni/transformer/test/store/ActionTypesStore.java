@@ -4,6 +4,7 @@ import com.github.benmanes.caffeine.cache.*;
 import com.ziqni.admin.sdk.ApiException;
 import com.ziqni.admin.sdk.model.*;
 import com.ziqni.transformer.test.concurrent.ZiqniExecutors;
+import com.ziqni.transformers.domain.CreateEventActionRequest;
 import lombok.NonNull;
 import scala.Option;
 import scala.collection.JavaConverters;
@@ -18,6 +19,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 /**
  * The key to this cache is the action type key
@@ -43,6 +45,10 @@ public class ActionTypesStore implements AsyncCacheLoader<@NonNull String, Actio
 
     public CompletableFuture<Optional<ActionTypesStore.ActionTypeEntry>> findActionTypeByAction(String action) {
         return cache.get(action).thenApply(Optional::ofNullable);
+    }
+
+    public CompletableFuture<String> getOrCreateEventAction(String action, Supplier<CreateEventActionRequest> supplier){
+
     }
 
     public CompletableFuture<Optional<Result>> create(final String action, Option<String> name, Option<scala.collection.Map<String, String>> metaData, String unitOfMeasureKey) {
@@ -95,7 +101,7 @@ public class ActionTypesStore implements AsyncCacheLoader<@NonNull String, Actio
     }
 
     @Override
-    public void onRemoval(@Nullable @NonNull String key, @Nullable ActionTypesStore.ActionTypeEntry value, RemovalCause cause) {
+    public void onRemoval(@NonNull String key, @Nullable ActionTypesStore.ActionTypeEntry value, RemovalCause cause) {
 
     }
 

@@ -1,8 +1,8 @@
 package com.ziqni.transformer.test.store;
 
 import com.ziqni.admin.sdk.model.Reward;
-import com.ziqni.transformer.test.models.BasicProduct;
-import com.ziqni.transformer.test.models.BasicReward;
+import com.ziqni.transformer.test.models.ZiqniProduct;
+import com.ziqni.transformer.test.models.ZiqniReward;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -21,9 +21,9 @@ class RewardStoreTest {
     }
 
     @Test
-    void getBasicReward() {
-        final var rewardModelById = rewardStore.getBasicReward("prod-1");
-        Optional<BasicReward> basicRewardOptional = rewardModelById.join();
+    void getZiqniReward() {
+        final var rewardById = rewardStore.getZiqniReward("prod-1");
+        Optional<ZiqniReward> basicRewardOptional = rewardById.join();
         assertNotNull(basicRewardOptional);
         assertNotNull(basicRewardOptional.get());
         assertNotNull(basicRewardOptional.get().getMetaData());
@@ -31,8 +31,8 @@ class RewardStoreTest {
 
     @Test
     void getReward() {
-        final var rewardModelById = rewardStore.getReward("prod-1");
-        Optional<Reward> basicRewardOptional = rewardModelById.join();
+        final var rewardById = rewardStore.getReward("prod-1");
+        Optional<Reward> basicRewardOptional = rewardById.join();
         assertNotNull(basicRewardOptional);
         assertNotNull(basicRewardOptional.get());
         assertNotNull(basicRewardOptional.get().getId());

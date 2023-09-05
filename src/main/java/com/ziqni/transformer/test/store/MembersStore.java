@@ -7,10 +7,13 @@ import com.ziqni.admin.sdk.model.MemberType;
 import com.ziqni.admin.sdk.model.Result;
 import com.ziqni.transformer.test.concurrent.ZiqniConcurrentHashMap;
 import com.ziqni.transformer.test.concurrent.ZiqniExecutors;
-import com.ziqni.transformer.test.models.BasicMember;
+import com.ziqni.transformer.test.models.ZiqniMember;
+import com.ziqni.transformer.test.models.ZiqniProduct;
+import com.ziqni.transformers.ZiqniNotFoundException;
+import com.ziqni.transformers.domain.CreateMemberRequest;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import scala.collection.JavaConverters;
+import scala.collection.immutable.Map$;
 
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -39,38 +42,47 @@ public class MembersStore implements AsyncCacheLoader<@NonNull String, @NonNull 
     /**
      * Get methods
      **/
-    public CompletableFuture<Optional<String>> getIdByReferenceId(String memberRefId) {
-        return this.refIdCache.getAsync(memberRefId);
+    public CompletableFuture<ZiqniMember> getMemberByReferenceId(String memberRefId) {
+        return this.refIdCache.getAsync(memberRefId).thenCompose(refId -> {
+            if (refId.isPresent())
+                return this.cache.get(refId.get()).thenApply(ZiqniMember::apply);
+            else
+                return CompletableFuture.failedFuture(new ZiqniNotFoundException("ZiqniMember", "null", true));
+        });
     }
 
     public CompletableFuture<String> getRefIdByMemberId(String memberId) {
         return cache.get(memberId).thenApply(Member::getMemberRefId);
     }
 
-    public CompletableFuture<Optional<String>> create(String memberRefId, String displayName, scala.collection.Seq<String> tagsToCreate, scala.Option<scala.collection.Map<String, String>> metaData) {
-        final var out = new CompletableFuture<Optional<String>>();
-        if(this.refIdCache.containsKey(memberRefId))
+    public CompletableFuture<ZiqniMember> create(String memberRefId, String displayName, scala.collection.immutable.Seq<String> tagsToCreate, scala.collection.immutable.Map<String, String> metaData) {
+        return create(new CreateMemberRequest(memberRefId,displayName,tagsToCreate, Map$.MODULE$.empty(),metaData));
+    }
+    public CompletableFuture<ZiqniMember> create(com.ziqni.transformers.domain.CreateMemberRequest toCreate) {
+
+        final var out = new CompletableFuture<Member>();
+        if(this.refIdCache.containsKey(toCreate.memberReferenceId()))
             out.completeExceptionally(new ApiException("member_ref_id_already_exists")); // or whatever we throw
         else {
-            final var tags = Objects.nonNull(tagsToCreate) && !tagsToCreate.isEmpty() ? JavaConverters.seqAsJavaList(tagsToCreate) : new ArrayList<String>();
-            final var metadata = Objects.nonNull(metaData) && !metaData.isEmpty() ? JavaConverters.mapAsJavaMap(metaData.get()) : new HashMap<String, String>();
+            final var tags = Objects.nonNull(toCreate.tags()) && !toCreate.tags().isEmpty() ? JavaConverters.seqAsJavaList(toCreate.tags()) : new ArrayList<String>();
+            final var metadata = Objects.nonNull(toCreate.metadata()) && !toCreate.metadata().isEmpty() ? JavaConverters.mapAsJavaMap(toCreate.metadata()) : new HashMap<String, String>();
             final var member = makeMock()
-                    .name(displayName)
-                    .memberRefId(memberRefId)
+                    .name(toCreate.displayName())
+                    .memberRefId(toCreate.memberReferenceId())
                     .tags(tags)
                     .metadata(metadata);
             this.cache.put(member.getId(), CompletableFuture.completedFuture(member));
             this.refIdCache.put(member.getMemberRefId(), member.getId());
-            out.thenApply(x -> x.orElse(member.getId()));
-            out.complete(Optional.of(member.getId()));
+//            out.thenApply(x -> x.orElse(member.getId()));
+//            out.complete(Optional.of(member.getId()));
         }
 
-        return out;
+        return out.thenApply(ZiqniMember::new);
 
     }
 
-    public CompletableFuture<Optional<Result>> update(String memberId, scala.Option<String> memberRefId, scala.Option<String> displayName, scala.Option<scala.collection.Seq<String>> tagsToUpdate, scala.Option<scala.collection.Map<String, String>> metaData) {
-        final var out = new CompletableFuture<Optional<Result>>();
+    public CompletableFuture<ZiqniMember> update(String memberId, scala.Option<String> memberRefId, scala.Option<String> displayName, scala.Option<scala.collection.Seq<String>> tagsToUpdate) {
+        final var out = new CompletableFuture<ZiqniMember>();
         var isNotInCache = Objects.isNull(this.cache.getIfPresent(memberId));
         if(isNotInCache)
             out.completeExceptionally(new ApiException("member_with_id_[" + memberId + "]_does_not_exist")); // or whatever we throw
@@ -83,14 +95,8 @@ public class MembersStore implements AsyncCacheLoader<@NonNull String, @NonNull 
                     x.name(displayName.get());
                 if (!tagsToUpdate.isEmpty())
                     x.tags(JavaConverters.seqAsJavaList(tagsToUpdate.get()));
-                if (Objects.nonNull(metaData) && !metaData.isEmpty())
-                    x.metadata(JavaConverters.mapAsJavaMap(metaData.get()));
 
-                out.complete(Optional.of(new Result()
-                        .id(x.getId())
-                        .result("UPDATED")
-                        .externalReference(x.getMemberRefId())));
-
+                out.complete(new ZiqniMember(x));
                 return x;
             });
 
@@ -99,8 +105,8 @@ public class MembersStore implements AsyncCacheLoader<@NonNull String, @NonNull 
         return out;
     }
 
-    public CompletableFuture<Optional<BasicMember>> findBasicMemberModelById(String memberId) {
-        return findMemberById(memberId).thenApply(x -> x.map(BasicMember::apply));
+    public CompletableFuture<ZiqniMember> findZiqniMemberById(String memberId) {
+        return findMemberById(memberId).thenApply(x -> x.map(ZiqniMember::apply).orElseThrow(() -> new ZiqniNotFoundException("ZiqniMember",memberId,false)));
     }
 
     public CompletableFuture<Optional<Member>> findMemberById(String memberId) {
@@ -133,7 +139,7 @@ public class MembersStore implements AsyncCacheLoader<@NonNull String, @NonNull 
     }
 
     @Override
-    public void onRemoval(@Nullable @NonNull String key, @Nullable @NonNull Member value, RemovalCause cause) {
+    public void onRemoval(@NonNull String key, @NonNull Member value, RemovalCause cause) {
 
     }
 }

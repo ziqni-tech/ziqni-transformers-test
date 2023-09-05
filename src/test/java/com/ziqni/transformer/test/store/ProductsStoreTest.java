@@ -1,7 +1,7 @@
 package com.ziqni.transformer.test.store;
 
 import com.ziqni.admin.sdk.model.Result;
-import com.ziqni.transformer.test.models.BasicProduct;
+import com.ziqni.transformer.test.models.ZiqniProduct;
 import com.ziqni.transformer.test.utils.ScalaUtils;
 import org.junit.jupiter.api.Test;
 import scala.Option;
@@ -40,9 +40,9 @@ class ProductsStoreTest {
     }
 
     @Test
-    void findBasicProductModelById() {
-        final var productModelById = productsStore.findBasicProductModelById("prod-1");
-        Optional<BasicProduct> basicProductOptional = productModelById.join();
+    void findZiqniProductById() {
+        final var productById = productsStore.findZiqniProductById("prod-1");
+        Optional<ZiqniProduct> basicProductOptional = productById.join();
         assertNotNull(basicProductOptional);
         assertNotNull(basicProductOptional.get());
         assertNotNull(basicProductOptional.get().getMetaData());

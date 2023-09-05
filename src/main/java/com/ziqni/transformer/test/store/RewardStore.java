@@ -6,7 +6,8 @@ import com.ziqni.admin.sdk.model.Product;
 import com.ziqni.admin.sdk.model.Reward;
 import com.ziqni.admin.sdk.model.RewardTypeReduced;
 import com.ziqni.transformer.test.concurrent.ZiqniExecutors;
-import com.ziqni.transformer.test.models.BasicReward;
+import com.ziqni.transformer.test.models.ZiqniReward;
+import com.ziqni.transformers.ZiqniNotFoundException;
 import lombok.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
@@ -35,8 +36,8 @@ public class RewardStore implements AsyncCacheLoader<@NonNull String, @NonNull R
     public RewardStore(StoreContext context) {
     }
 
-    public CompletableFuture<Optional<BasicReward>> getBasicReward(String id){
-        return getReward(id).thenApply(x-> x.map(BasicReward::apply));
+    public CompletableFuture<ZiqniReward> getZiqniReward(String id){
+        return getReward(id).thenApply(x-> x.map(ZiqniReward::apply).orElseThrow( () -> new ZiqniNotFoundException("ZiqniReward",id,false)));
     }
     public CompletableFuture<Optional<Reward>> getReward(String id){
         return cache.get(id).thenApply(Optional::ofNullable);
@@ -72,7 +73,7 @@ public class RewardStore implements AsyncCacheLoader<@NonNull String, @NonNull R
     }
 
     @Override
-    public void onRemoval(@Nullable @NonNull String key, @Nullable @NonNull Reward value, RemovalCause cause) {
+    public void onRemoval(@NonNull String key, @NonNull Reward value, RemovalCause cause) {
 
     }
 }

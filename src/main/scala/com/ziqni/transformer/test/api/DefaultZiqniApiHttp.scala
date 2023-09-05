@@ -1,14 +1,14 @@
 package com.ziqni.transformer.test.api
 
 import com.ziqni.transformers.{ZiqniApiHttp, ZiqniContext}
-import com.ziqni.transformers.domain.{BasicAuthCredentials, HttpResponseEntity}
+import com.ziqni.transformers.domain.{ZiqniAuthCredentials, HttpResponseEntity}
 import sttp.client.{UriContext, basicRequest, _}
 import sttp.client.quick.backend
 import sttp.model.Method
 
-object DefaultZiqniApiHttp extends ZiqniApiHttp {
+object DefaultZiqniApiHttp extends com.ziqni.transformers.ZiqniApiHttp {
 
-  override def httpGetWithLogMessage(url: String, headers: Map[String, Seq[String]], basicAuthCredentials: Option[BasicAuthCredentials], sendCompressed: Boolean = true, logMessage: Option[String], ziqniContext: ZiqniContext): HttpResponseEntity = {
+  override def httpGetWithLogMessage(url: String, headers: Map[String, Seq[String]], basicAuthCredentials: Option[ZiqniAuthCredentials], sendCompressed: Boolean = true, logMessage: Option[String], ziqniContext: ZiqniContext): HttpResponseEntity = {
     val request = basicRequest.method(Method.GET, uri"$url")
 
     basicAuthCredentials.foreach(s => request.auth.basic(s.username,s.password))
@@ -16,7 +16,7 @@ object DefaultZiqniApiHttp extends ZiqniApiHttp {
     sendAndSetResult(setHeaders(request, headers), logMessage, ziqniContext)
   }
 
-  override def httpPutWithLogMessage(url: String, body: String, headers: Map[String, Seq[String]], basicAuthCredentials: Option[BasicAuthCredentials], sendCompressed: Boolean = true, logMessage: Option[String], ziqniContext: ZiqniContext): HttpResponseEntity = {
+  override def httpPutWithLogMessage(url: String, body: String, headers: Map[String, Seq[String]], basicAuthCredentials: Option[ZiqniAuthCredentials], sendCompressed: Boolean = true, logMessage: Option[String], ziqniContext: ZiqniContext): HttpResponseEntity = {
     val request = basicRequest
       .method(Method.PUT, uri"$url")
       .body(body)
@@ -27,7 +27,7 @@ object DefaultZiqniApiHttp extends ZiqniApiHttp {
     sendAndSetResult(setHeaders(request, headers), logMessage, ziqniContext)
   }
 
-  override def httpPostWithLogMessage(url: String, body: String, headers: Map[String, Seq[String]], basicAuthCredentials: Option[BasicAuthCredentials], sendCompressed: Boolean = true, logMessage: Option[String], ziqniContext: ZiqniContext): HttpResponseEntity = {
+  override def httpPostWithLogMessage(url: String, body: String, headers: Map[String, Seq[String]], basicAuthCredentials: Option[ZiqniAuthCredentials], sendCompressed: Boolean = true, logMessage: Option[String], ziqniContext: ZiqniContext): HttpResponseEntity = {
 
 
     val request = basicRequest.method(Method.POST, uri"$url")
@@ -39,7 +39,7 @@ object DefaultZiqniApiHttp extends ZiqniApiHttp {
     sendAndSetResult(setHeaders(request, headers), logMessage, ziqniContext)
   }
 
-  override def httpDeleteWithLogMessage(url: String, headers: Map[String, Seq[String]], basicAuthCredentials: Option[BasicAuthCredentials], sendCompressed: Boolean = true, logMessage: Option[String], ziqniContext: ZiqniContext): HttpResponseEntity = {
+  override def httpDeleteWithLogMessage(url: String, headers: Map[String, Seq[String]], basicAuthCredentials: Option[ZiqniAuthCredentials], sendCompressed: Boolean = true, logMessage: Option[String], ziqniContext: ZiqniContext): HttpResponseEntity = {
     val request = basicRequest.method(Method.DELETE, uri"$url")
 
     basicAuthCredentials.foreach(s => request.auth.basic(s.username,s.password))

@@ -1,21 +1,22 @@
 package com.ziqni.transformer.test.models
 
 import com.ziqni.admin.sdk.model.Reward
-import com.ziqni.transformers.domain.BasicRewardModel
+import com.ziqni.transformers.domain
+import com.ziqni.transformers.domain.ZiqniReward
 
 import scala.jdk.CollectionConverters._
 import scala.language.implicitConversions
 
-case class BasicReward(reward: Reward) extends BasicRewardModel with BasicModelHelper {
+case class ZiqniReward(reward: Reward) extends com.ziqni.transformers.domain.ZiqniReward with ZiqniHelper {
 	implicit private def stringToOption(s: String): Option[String] = Option(s)
 
-	override def getClRewardId: String = reward.getId
+	override def getRewardId: String = reward.getId
 
 	override def getEntityId: EntityId = reward.getEntityId
 
 	override def getRank: String = reward.getRewardRank
 
-	override def getName: String = getClRewardId //reward.rewardName
+	override def getName: String = getRewardId //reward.rewardName
 
 	override def getDescription: String = reward.getDescription.getOrElse("")
 
@@ -43,4 +44,6 @@ case class BasicReward(reward: Reward) extends BasicRewardModel with BasicModelH
 	 * @return Entity type this Reward is linked to
 	 */
 	override def getEntityType: String = reward.getEntityType.getValue
+
+	override def getCustomFields: Map[String, domain.CustomFieldEntry[_]] = convertCustomFields(reward.getCustomFields.asScala.toMap)
 }

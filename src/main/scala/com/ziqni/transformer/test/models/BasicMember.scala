@@ -1,11 +1,11 @@
 package com.ziqni.transformer.test.models
 
 import com.ziqni.admin.sdk.model.Member
-import com.ziqni.transformers.domain.BasicMemberModel
+import com.ziqni.transformers.domain.{CustomFieldEntry, ZiqniMember}
 
 import scala.collection.JavaConverters
 
-case class BasicMember(member: Member) extends BasicMemberModel with BasicModelHelper {
+case class ZiqniMember(member: Member) extends com.ziqni.transformers.domain.ZiqniMember with ZiqniHelper {
 
 	override def getMemberRefId: MemberRefId = member.getMemberRefId
 
@@ -15,5 +15,7 @@ case class BasicMember(member: Member) extends BasicMemberModel with BasicModelH
 
 	override def getMetaData: Option[Map[String, String]] = member.getMetadata
 
-	override def getClMemberId: MemberId = member.getId
+	override def getMemberId: MemberId = member.getId
+
+	override def getCustomFields: Map[String, CustomFieldEntry[_]] = Map.empty
 }

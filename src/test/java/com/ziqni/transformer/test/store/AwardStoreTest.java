@@ -19,8 +19,8 @@ class AwardStoreTest {
     }
 
     @Test
-    void getBasicAward() throws ExecutionException, InterruptedException {
-        final var actionTypeByAction = awardStore.getBasicAward("award-1");
+    void getZiqniAward() throws ExecutionException, InterruptedException {
+        final var actionTypeByAction = awardStore.getZiqniAward("award-1");
         actionTypeByAction.join();
         assertNotNull(actionTypeByAction);
         assertNotNull(actionTypeByAction.get());

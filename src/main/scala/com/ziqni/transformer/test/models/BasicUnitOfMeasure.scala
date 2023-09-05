@@ -1,9 +1,9 @@
 package com.ziqni.transformer.test.models
 
 import com.ziqni.admin.sdk.model.UnitOfMeasure
-import com.ziqni.transformers.domain.BasicUnitOfMeasureModel
+import com.ziqni.transformers.domain.ZiqniUnitOfMeasure
 
-case class BasicUnitOfMeasure(uom: UnitOfMeasure) extends BasicUnitOfMeasureModel with BasicModelHelper {
+case class ZiqniUnitOfMeasure(uom: UnitOfMeasure) extends com.ziqni.transformers.domain.ZiqniUnitOfMeasure with ZiqniHelper {
 
 	override def getName: String  = uom.getName
 	override def getUnitOfMeasureKey: String  = uom.getKey

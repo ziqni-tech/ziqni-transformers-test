@@ -1,12 +1,13 @@
 package com.ziqni.transformer.test.models
 
+import com.ziqni.transformers.domain.CustomFieldEntry
 import org.joda.time.DateTime
 
 import java.time.OffsetDateTime
 import scala.jdk.CollectionConverters._
 import scala.language.implicitConversions
 
-trait BasicModelHelper {
+trait ZiqniHelper {
 
 	implicit def getMetaDataAsMap(in: java.util.Map[String, String]): Option[Map[String, String]] =
 		Option(in).map(_.asScala.toMap)
@@ -22,5 +23,9 @@ trait BasicModelHelper {
 		val combined = sourceMeta ++ metadata
 
 		onMerged(combined)
+	}
+
+	protected def convertCustomFields(in: Map[String, AnyRef]): Map[String, CustomFieldEntry[_]] = {
+		Map.empty
 	}
 }
