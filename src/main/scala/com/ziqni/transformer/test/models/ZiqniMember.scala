@@ -1,9 +1,8 @@
 package com.ziqni.transformer.test.models
 
 import com.ziqni.admin.sdk.model.Member
-import com.ziqni.transformers.domain.{CustomFieldEntry, ZiqniMember}
-
-import scala.collection.JavaConverters
+import com.ziqni.transformer.test.utils.ScalaUtils
+import com.ziqni.transformers.domain.CustomFieldEntry
 
 case class ZiqniMember(member: Member) extends com.ziqni.transformers.domain.ZiqniMember with ZiqniHelper {
 
@@ -11,7 +10,7 @@ case class ZiqniMember(member: Member) extends com.ziqni.transformers.domain.Ziq
 
 	override def getDisplayName: Option[String] = Option(member.getName)
 
-	override def getTags: Option[Seq[String]] = Option(member.getTags).map(t => JavaConverters.asScalaIteratorConverter(t.iterator()).asScala.toSeq)
+	override def getTags: Option[Seq[String]] = Option(member.getTags).map(t => ScalaUtils.listJava2Scala(t) )
 
 	override def getMetaData: Option[Map[String, String]] = member.getMetadata
 

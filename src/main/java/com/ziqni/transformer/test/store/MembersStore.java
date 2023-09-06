@@ -73,8 +73,7 @@ public class MembersStore implements AsyncCacheLoader<@NonNull String, @NonNull 
                     .metadata(metadata);
             this.cache.put(member.getId(), CompletableFuture.completedFuture(member));
             this.refIdCache.put(member.getMemberRefId(), member.getId());
-//            out.thenApply(x -> x.orElse(member.getId()));
-//            out.complete(Optional.of(member.getId()));
+            out.complete(member);
         }
 
         return out.thenApply(ZiqniMember::new);
