@@ -30,8 +30,8 @@ final case class ZiqniApiAsyncClient(ziqniStores: ZiqniStores, masterAccount: Op
 	override def findByBatchId(batchId: String): Future[Seq[ZiqniEvent]] =
 		ziqniStores.eventsStore.findByBatchId(batchId).asScala.map(x=>x.asScala.toSeq)(transformerExecutionContext)
 
-	override def pushEvent(basicEvent: ZiqniEvent): Future[Boolean] =
-		ziqniStores.eventsStore.pushEvent(basicEvent).asScala.map(r => r.getMeta.getErrorCount == 0)(transformerExecutionContext)
+	override def pushEvent(event: ZiqniEvent): Future[Boolean] =
+		ziqniStores.eventsStore.pushEvent(event).asScala.map(r => r.getMeta.getErrorCount == 0)(transformerExecutionContext)
 
 	override def pushEvents(events: Seq[ZiqniEvent]): Future[Boolean] =
 		ziqniStores.eventsStore.pushEvent(events.asJava).asScala.map(r => r.getMeta.getErrorCount == 0)(transformerExecutionContext)

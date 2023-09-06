@@ -24,8 +24,8 @@ class EventsStoreTest {
 
     @Test
     void pushEvent() {
-        final var basicEvent = new ZiqniEvent(new Some<>("memb-2"), "test-member-ref-id-1", "1", "test-event-1", new Some<>("1002"), "test-action", 2.0, DateTime.now(), ScalaUtils.emptySeqString, Map$.MODULE$.empty(), null);
-        final var future = eventsStore.pushEvent(basicEvent);
+        final var ziqniEvent = new ZiqniEvent(new Some<>("memb-2"), "test-member-ref-id-1", "1", "test-event-1", new Some<>("1002"), "test-action", 2.0, DateTime.now(), ScalaUtils.emptySeqString, Map$.MODULE$.empty(), null);
+        final var future = eventsStore.pushEvent(ziqniEvent);
         final var eventResponse = future.join();
         assertNotNull(eventResponse);
         assertNotNull(eventResponse.getResults());
@@ -34,8 +34,8 @@ class EventsStoreTest {
 
     @Test
     void pushEventEmpty() {
-        final var basicEvent = new ZiqniEvent(Option.empty(), "test-member-ref-id-1", "2", "test-event-1", new Some<>("1002"), "test-action", 2.0, DateTime.now(), ScalaUtils.emptySeqString, Map$.MODULE$.empty(), null);
-        final var future = eventsStore.pushEvent(basicEvent);
+        final var ziqniEvent = new ZiqniEvent(Option.empty(), "test-member-ref-id-1", "2", "test-event-1", new Some<>("1002"), "test-action", 2.0, DateTime.now(), ScalaUtils.emptySeqString, Map$.MODULE$.empty(), null);
+        final var future = eventsStore.pushEvent(ziqniEvent);
         final var eventResponse = future.join();
         assertNotNull(eventResponse);
         assertNotNull(eventResponse.getResults());
@@ -44,8 +44,8 @@ class EventsStoreTest {
 
     @Test
     void pushEventTransaction() {
-        final var basicEvent = new ZiqniEvent(new Some<>("memb-2"), "test-member-ref-id-1", "3", "test-event-1", new Some<>("1002"), "test-action", 2.0, DateTime.now(), ScalaUtils.emptySeqString, Map$.MODULE$.empty(), null);
-        final var future = eventsStore.pushEventTransaction(basicEvent);
+        final var ziqniEvent = new ZiqniEvent(new Some<>("memb-2"), "test-member-ref-id-1", "3", "test-event-1", new Some<>("1002"), "test-action", 2.0, DateTime.now(), ScalaUtils.emptySeqString, Map$.MODULE$.empty(), null);
+        final var future = eventsStore.pushEventTransaction(ziqniEvent);
         final var eventResponse = future.join();
         assertNotNull(eventResponse);
         assertNotNull(eventResponse.getResults());

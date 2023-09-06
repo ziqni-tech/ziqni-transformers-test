@@ -54,22 +54,22 @@ public class EventsStore implements CacheLoader<@NonNull String, EventsStore.Eve
         this.actionTypesStore = actionTypesStore;
     }
 
-    public CompletableFuture<ModelApiResponse> pushEvent(ZiqniEvent basicEvent) {
-        return pushEvent(List.of(basicEvent));
+    public CompletableFuture<ModelApiResponse> pushEvent(ZiqniEvent event) {
+        return pushEvent(List.of(event));
     }
 
-    public CompletableFuture<ModelApiResponse> pushEvent(List<ZiqniEvent> basicEvents) {
+    public CompletableFuture<ModelApiResponse> pushEvent(List<ZiqniEvent> event) {
         var response = new ModelApiResponse();
-        basicEvents.forEach(x -> {
+        event.forEach(x -> {
             pushEvent(x, response);
         });
 
         return CompletableFuture.completedFuture(response);
     }
 
-    public CompletableFuture<ModelApiResponse> pushEventTransaction(ZiqniEvent basicEvent) {
+    public CompletableFuture<ModelApiResponse> pushEventTransaction(ZiqniEvent ziqniEvent) {
         var response = new ModelApiResponse();
-        pushEvent(basicEvent, response);
+        pushEvent(ziqniEvent, response);
 
         return CompletableFuture.completedFuture(response);
     }
@@ -79,16 +79,16 @@ public class EventsStore implements CacheLoader<@NonNull String, EventsStore.Eve
 
     }
 
-    private void pushEvent(ZiqniEvent basicEvent, ModelApiResponse response) {
-        if (basicEvent.action().equalsIgnoreCase(EntityType.MEMBER.getValue())){
-            CompletableFuture<ZiqniMember> createdMember = membersStore.create(basicEvent.memberRefId(), "member-" + identifierCounter, basicEvent.tags(), Map$.MODULE$.empty());
+    private void pushEvent(ZiqniEvent ziqniEvent, ModelApiResponse response) {
+        if (ziqniEvent.action().equalsIgnoreCase(EntityType.MEMBER.getValue())){
+            CompletableFuture<ZiqniMember> createdMember = membersStore.create(ziqniEvent.memberRefId(), "member-" + identifierCounter, ziqniEvent.tags(), Map$.MODULE$.empty());
             createdMember.thenAccept(y ->
                 response.addResultsItem(new Result().id(y.getMemberId()))
             );
 
-        } else if (basicEvent.action().equalsIgnoreCase(EntityType.PRODUCT.getValue())) {
+        } else if (ziqniEvent.action().equalsIgnoreCase(EntityType.PRODUCT.getValue())) {
             CompletableFuture<ZiqniProduct> createdProduct = productsStore.create(
-                    basicEvent.entityRefId(),
+                    ziqniEvent.entityRefId(),
                     "product-" + identifierCounter,
                     ScalaUtils.emptySeqString,
                     "productType",
@@ -101,14 +101,14 @@ public class EventsStore implements CacheLoader<@NonNull String, EventsStore.Eve
         }
 
         final var eventTransaction = new EventTransaction();
-        eventTransaction.addZiqniEvent(basicEvent);
+        eventTransaction.addZiqniEvent(ziqniEvent);
 
-        basicEvent.batchId().map(batchId ->
+        ziqniEvent.batchId().map(batchId ->
                 batchIdCache.put(batchId, eventTransaction.getEvents())
         );
 
-        this.cache.put(basicEvent.eventRefId(), CompletableFuture.completedFuture(eventTransaction));
-        response.addResultsItem(new Result().id(basicEvent.eventRefId()));
+        this.cache.put(ziqniEvent.eventRefId(), CompletableFuture.completedFuture(eventTransaction));
+        response.addResultsItem(new Result().id(ziqniEvent.eventRefId()));
 
     }
 
