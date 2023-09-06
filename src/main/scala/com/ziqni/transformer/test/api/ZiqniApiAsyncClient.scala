@@ -3,7 +3,7 @@ package com.ziqni.transformer.test.api
 import com.ziqni.admin.sdk.model.Space
 import com.ziqni.transformer.test.models._
 import com.ziqni.transformer.test.store.ZiqniStores
-import com.ziqni.transformers.domain.{CreateEventActionRequest, CreateMemberRequest, CreateProductRequest, CreateUnitOfMeasureRequest, CustomFieldEntry, ZiqniEvent, ZiqniMember, ZiqniProduct, ZiqniUnitOfMeasure}
+import com.ziqni.transformers.domain.{CreateEventActionRequest, CreateMemberRequest, CreateProductRequest, CustomFieldEntry, ZiqniEvent, ZiqniMember, ZiqniProduct, ZiqniUnitOfMeasure}
 import com.ziqni.transformers.ZiqniApi
 
 import java.util.concurrent.ConcurrentHashMap
@@ -12,13 +12,14 @@ import scala.concurrent.{ExecutionContextExecutor, Future}
 import scala.jdk.CollectionConverters.SeqHasAsJava
 import scala.jdk.FutureConverters.CompletionStageOps
 import scala.jdk.CollectionConverters.ListHasAsScala
-import scala.jdk.FunctionConverters.enrichAsJavaSupplier
+import scala.jdk.FunctionConverters.{enrichAsJavaFunction, enrichAsJavaSupplier}
 import scala.language.implicitConversions
 
 final case class ZiqniApiAsyncClient(ziqniStores: ZiqniStores, masterAccount: Option[Space], accountId: AccountId, spaceName: SpaceName, _subAccounts: TrieMap[SpaceName, ZiqniApi], actions: ConcurrentHashMap[String, Seq[String]])
 	extends com.ziqni.transformers.ZiqniApiAsync {
 	assert(accountId != null)
 
+	override def nextId: String = ZiqniApiClient.timeBasedUUIDGenerator.getBase64UUID
 	implicit private def stringToOption(s: String): Option[String] = Option(s)
 
 	// ASYNC //
@@ -99,17 +100,22 @@ final case class ZiqniApiAsyncClient(ziqniStores: ZiqniStores, masterAccount: Op
 	override def createUnitOfMeasure(toCreate: com.ziqni.transformers.domain.CreateUnitOfMeasureRequest): Future[String] =
 		ziqniStores.unitsOfMeasureStore.create(toCreate).asScala.map(x=>x.getExternalReference)(transformerExecutionContext)
 
-	override def nextId: String = ZiqniApiClient.timeBasedUUIDGenerator.getBase64UUID
 
-	override def getOrCreateMember(referenceId: String, createAs: () => CreateMemberRequest): Future[ZiqniMember] = ???
+	override def getOrCreateMember(referenceId: String, createAs: () => CreateMemberRequest): Future[ZiqniMember] =
+		ziqniStores.membersStore.getOrCreateMember(referenceId, createAs.asJava).asScala
 
-	override def getAndOnExitsOrCreateMember(referenceId: String, onExist: ZiqniMember => Future[ZiqniMember], createAs: () => CreateMemberRequest): Future[ZiqniMember] = ???
+	override def getAndOnExitsOrCreateMember(referenceId: String, onExist: ZiqniMember => Future[ZiqniMember], createAs: () => CreateMemberRequest): Future[ZiqniMember] =
+		ziqniStores.membersStore.getAndOnExitsOrCreateMember(referenceId, createAs.asJava, onExist.asJava).asScala
 
-	override def createProduct(toCreate: CreateProductRequest): Future[ZiqniProduct] = ???
+	override def createProduct(toCreate: CreateProductRequest): Future[ZiqniProduct] =
+    ziqniStores.productsStore.create(toCreate).asScala
 
-	override def getAndOnExitsOrCreateProduct(referenceId: String, onExist: ZiqniProduct => Future[ZiqniProduct], createAs: () => CreateProductRequest): Future[ZiqniProduct] = ???
+	override def getAndOnExitsOrCreateProduct(referenceId: String, onExist: ZiqniProduct => Future[ZiqniProduct], createAs: () => CreateProductRequest): Future[ZiqniProduct] =
+		ziqniStores.productsStore.getAndOnExitsOrCreateProduct(referenceId, createAs.asJava, onExist.asJava).asScala
 
-	override def createEventAction(toCreate: CreateEventActionRequest): Future[Boolean] = ???
+	override def createEventAction(toCreate: CreateEventActionRequest): Future[Boolean] =
+		ziqniStores.actionTypesStore.create(toCreate).asScala.map(x => x)
 
-	override def getUnitOfMeasure(unitOfMeasureId: String): Future[Option[ZiqniUnitOfMeasure]] = ???
+	override def getUnitOfMeasure(unitOfMeasureId: String): Future[Option[ZiqniUnitOfMeasure]] =
+		ziqniStores.unitsOfMeasureStore.getZiqniUnitOfMeasure(unitOfMeasureId).asScala.map( x => { if(x.isPresent) Option(x.get()) else None })
 }

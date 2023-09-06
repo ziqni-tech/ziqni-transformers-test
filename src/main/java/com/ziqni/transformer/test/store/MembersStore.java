@@ -9,18 +9,24 @@ import com.ziqni.transformer.test.concurrent.ZiqniConcurrentHashMap;
 import com.ziqni.transformer.test.concurrent.ZiqniExecutors;
 import com.ziqni.transformer.test.models.ZiqniMember;
 import com.ziqni.transformer.test.models.ZiqniProduct;
+import com.ziqni.transformer.test.utils.JavaUtils;
+import com.ziqni.transformer.test.utils.ScalaUtils;
 import com.ziqni.transformers.ZiqniNotFoundException;
 import com.ziqni.transformers.domain.CreateMemberRequest;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import scala.collection.JavaConverters;
 import scala.collection.immutable.Map$;
+import scala.concurrent.Future;
 
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class MembersStore implements AsyncCacheLoader<@NonNull String, @NonNull Member>, RemovalListener<@NonNull String, @NonNull Member> {
 
@@ -55,9 +61,37 @@ public class MembersStore implements AsyncCacheLoader<@NonNull String, @NonNull 
         return cache.get(memberId).thenApply(Member::getMemberRefId);
     }
 
+    public CompletableFuture<ZiqniMember> getOrCreateMember(String memberRefId, Supplier<CreateMemberRequest> createAs) {
+        return this.refIdCache.getAsync(memberRefId).thenCompose(refId -> {
+            if (refId.isPresent())
+                return this.cache.get(refId.get()).thenApply(ZiqniMember::apply);
+            else
+                return create(createAs.get());
+        });
+    }
+
+    public CompletableFuture<com.ziqni.transformers.domain.ZiqniMember> getAndOnExitsOrCreateMember(String memberRefId, Supplier<CreateMemberRequest> createAs, Function<com.ziqni.transformers.domain.ZiqniMember, Future<com.ziqni.transformers.domain.ZiqniMember>> onExist) {
+        return this.refIdCache.getAsync(memberRefId).thenCompose(refId -> {
+            if (refId.isPresent())
+                return this.cache.get(refId.get()).thenApply(ZiqniMember::apply).thenCompose(ziqniMember ->
+                    applyOnExist(ziqniMember.asBase(),onExist)
+                );
+            else
+                return create(createAs.get()).thenApply(ZiqniMember::asBase);
+        });
+    }
+
+    private CompletionStage<com.ziqni.transformers.domain.ZiqniMember> applyOnExist(com.ziqni.transformers.domain.ZiqniMember member, Function<com.ziqni.transformers.domain.ZiqniMember, scala.concurrent.Future<com.ziqni.transformers.domain.ZiqniMember>> onExist){
+        if(Objects.isNull(onExist))
+            return CompletableFuture.completedFuture( member );
+        else
+            return JavaUtils.scalaFutureToJava(onExist.apply(member));
+    }
+
     public CompletableFuture<ZiqniMember> create(String memberRefId, String displayName, scala.collection.immutable.Seq<String> tagsToCreate, scala.collection.immutable.Map<String, String> metaData) {
         return create(new CreateMemberRequest(memberRefId,displayName,tagsToCreate, Map$.MODULE$.empty(),metaData));
     }
+
     public CompletableFuture<ZiqniMember> create(com.ziqni.transformers.domain.CreateMemberRequest toCreate) {
 
         final var out = new CompletableFuture<Member>();

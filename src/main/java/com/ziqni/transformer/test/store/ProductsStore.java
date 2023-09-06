@@ -7,8 +7,11 @@ import com.ziqni.admin.sdk.model.Product;
 import com.ziqni.admin.sdk.model.Result;
 import com.ziqni.transformer.test.concurrent.ZiqniConcurrentHashMap;
 import com.ziqni.transformer.test.concurrent.ZiqniExecutors;
+import com.ziqni.transformer.test.models.ZiqniMember;
 import com.ziqni.transformer.test.models.ZiqniProduct;
+import com.ziqni.transformer.test.utils.JavaUtils;
 import com.ziqni.transformers.ZiqniNotFoundException;
+import com.ziqni.transformers.domain.CreateMemberRequest;
 import com.ziqni.transformers.domain.CreateProductRequest;
 import lombok.NonNull;
 import scala.Option;
@@ -22,6 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -59,8 +63,30 @@ public class ProductsStore implements AsyncCacheLoader<@NonNull String, @NonNull
                 ;
     }
 
-    public CompletableFuture<com.ziqni.transformers.domain.ZiqniProduct> create(String productRefId, String displayName, Seq<String> tags, String productType, Double defaultAdjustmentFactor, scala.collection.Map<String, String> metaData) {
-        final var out = new CompletableFuture<com.ziqni.transformers.domain.ZiqniProduct>();
+    public CompletableFuture<com.ziqni.transformers.domain.ZiqniProduct> getAndOnExitsOrCreateProduct(String memberRefId, Supplier<CreateProductRequest> createAs, Function<com.ziqni.transformers.domain.ZiqniProduct, Future<com.ziqni.transformers.domain.ZiqniProduct>> onExist) {
+        return this.refIdCache.getAsync(memberRefId).thenCompose(refId -> {
+            if (refId.isPresent())
+                return this.cache.get(refId.get()).thenApply(ZiqniProduct::apply).thenCompose(ziqniProduct ->
+                        applyOnExist(ziqniProduct.asBase(),onExist)
+                );
+            else
+                return create(createAs.get()).thenApply(ZiqniProduct::asBase);
+        });
+    }
+
+    private CompletionStage<com.ziqni.transformers.domain.ZiqniProduct> applyOnExist(com.ziqni.transformers.domain.ZiqniProduct member, Function<com.ziqni.transformers.domain.ZiqniProduct, scala.concurrent.Future<com.ziqni.transformers.domain.ZiqniProduct>> onExist){
+        if(Objects.isNull(onExist))
+            return CompletableFuture.completedFuture( member );
+        else
+            return JavaUtils.scalaFutureToJava(onExist.apply(member));
+    }
+
+    public CompletableFuture<ZiqniProduct> create(CreateProductRequest toCreate) {
+        return this.create(toCreate.productReferenceId(), toCreate.displayName(), toCreate.tags(), "productType", toCreate.defaultAdjustmentFactor(), toCreate.metadata());
+    }
+
+    public CompletableFuture<ZiqniProduct> create(String productRefId, String displayName, Seq<String> tags, String productType, Double defaultAdjustmentFactor, scala.collection.Map<String, String> metaData) {
+        final var out = new CompletableFuture<ZiqniProduct>();
         if(this.refIdCache.containsKey(productRefId))
             out.completeExceptionally(new ApiException("product_ref_id_already_exists")); // or whatever we throw
         else {

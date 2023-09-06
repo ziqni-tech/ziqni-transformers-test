@@ -61,6 +61,12 @@ public class UnitsOfMeasureStore implements AsyncCacheLoader<@NonNull String, @N
         return cache.get(uom).thenApply(Optional::ofNullable);
     }
 
+    public CompletableFuture<Optional<ZiqniUnitOfMeasure>> getZiqniUnitOfMeasure(String uom) {
+        return cache.get(uom).thenApply(Optional::ofNullable).thenApply(unitOfMeasure ->
+                unitOfMeasure.map(ZiqniUnitOfMeasure::new)
+        );
+    }
+
     public CompletableFuture<Double> getUnitOfMeasureMultiplier(String uom) {
         return cache.get(uom)
                 .thenApply(Optional::ofNullable)

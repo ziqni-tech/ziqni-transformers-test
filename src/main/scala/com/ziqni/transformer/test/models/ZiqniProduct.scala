@@ -21,4 +21,6 @@ case class ZiqniProduct(product: com.ziqni.admin.sdk.model.Product) extends com.
 	override def getMetaData: Option[Map[String, String]] = product.getMetadata
 
 	override def getCustomFields: Map[String, domain.CustomFieldEntry[_]] = convertCustomFields(product.getCustomFields.asScala.toMap)
+
+	def asBase: com.ziqni.transformers.domain.ZiqniProduct = this
 }

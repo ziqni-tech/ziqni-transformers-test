@@ -59,6 +59,12 @@ public class ActionTypesStore implements AsyncCacheLoader<@NonNull String, Actio
         });
     }
 
+    public CompletableFuture<Boolean> create(final CreateEventActionRequest toCreate) {
+        return this.create(toCreate.action(), toCreate.name(), Option.apply(toCreate.metadata()), toCreate.unitOfMeasureKey().getOrElse(UnitOfMeasureType.OTHER::getValue)).handle((actionTypeEntry, throwable) ->
+            Objects.isNull(throwable)
+        );
+    }
+
     public CompletableFuture<ActionTypeEntry> create(final String action, Option<String> name, Option<scala.collection.Map<String, String>> metaData, String unitOfMeasureKey) {
         final var out = new CompletableFuture<ActionTypeEntry>();
         var isInCache = Objects.nonNull(this.cache.getIfPresent(action));

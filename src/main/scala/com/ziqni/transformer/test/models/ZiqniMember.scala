@@ -17,4 +17,6 @@ case class ZiqniMember(member: Member) extends com.ziqni.transformers.domain.Ziq
 	override def getMemberId: MemberId = member.getId
 
 	override def getCustomFields: Map[String, CustomFieldEntry[_]] = Map.empty
+
+	def asBase: com.ziqni.transformers.domain.ZiqniMember = this
 }

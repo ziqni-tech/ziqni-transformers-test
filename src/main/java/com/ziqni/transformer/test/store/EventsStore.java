@@ -7,6 +7,7 @@ import com.ziqni.admin.sdk.model.Result;
 import com.ziqni.transformer.test.concurrent.ZiqniConcurrentHashMap;
 import com.ziqni.transformer.test.concurrent.ZiqniExecutors;
 import com.ziqni.transformer.test.models.ZiqniMember;
+import com.ziqni.transformer.test.models.ZiqniProduct;
 import com.ziqni.transformer.test.utils.ScalaUtils;
 import com.ziqni.transformers.domain.ZiqniEvent;
 import lombok.NonNull;
@@ -86,7 +87,7 @@ public class EventsStore implements CacheLoader<@NonNull String, EventsStore.Eve
             );
 
         } else if (basicEvent.action().equalsIgnoreCase(EntityType.PRODUCT.getValue())) {
-            CompletableFuture<com.ziqni.transformers.domain.ZiqniProduct> createdProduct = productsStore.create(
+            CompletableFuture<ZiqniProduct> createdProduct = productsStore.create(
                     basicEvent.entityRefId(),
                     "product-" + identifierCounter,
                     ScalaUtils.emptySeqString,
