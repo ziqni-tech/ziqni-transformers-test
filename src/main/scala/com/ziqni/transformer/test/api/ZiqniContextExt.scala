@@ -1,5 +1,6 @@
 package com.ziqni.transformer.test.api
 
+import com.typesafe.scalalogging.LazyLogging
 import com.ziqni.transformers.ZiqniContext.SpaceName
 import com.ziqni.transformers.domain.ZiqniAccount
 import com.ziqni.transformers._
@@ -16,7 +17,7 @@ case class ZiqniContextExt(_accountId: String,
                            _ziqniExecutionContext: ExecutionContextExecutor,
                            _ziqniSubAccounts: Seq[ZiqniAccount],
                            _ziqniSubAccountApiAsync: SpaceName => ZiqniApiAsync
-                          ) extends com.ziqni.transformers.ZiqniContext {
+                          ) extends com.ziqni.transformers.ZiqniContext with LazyLogging {
   override def accountId: String = _accountId
 
   override def spaceName: String = _spaceName
@@ -37,9 +38,20 @@ case class ZiqniContextExt(_accountId: String,
 
   override def ziqniSubAccountApiAsync(spaceName: SpaceName): ZiqniApiAsync = _ziqniSubAccountApiAsync.apply(spaceName)
 
-  override def ziqniConnectionParameterKeys(): Set[String] = ???
+  override def ziqniConnectionParameterKeys(): Set[String] = Set.empty
 
-  override def ziqniConnectionParameter(connectionParameterKey: String): Option[AnyRef] = ???
+  override def ziqniConnectionParameter(connectionParameterKey: String): Option[AnyRef] = None
 
-  override def ziqniSystemLogWriter(message: String, throwable: Throwable, logLevel: LogLevel): Unit = ???
+  override def ziqniSystemLogWriter(message: String, throwable: Throwable, logLevel: LogLevel): Unit = {
+    if(LogLevel.INFO == logLevel)
+      logger.info(message, throwable)
+    else if (LogLevel.WARN == logLevel)
+      logger.warn(message, throwable)
+    else if (LogLevel.DEBUG == logLevel)
+      logger.debug(message, throwable)
+    else if (LogLevel.ERROR== logLevel)
+      logger.error(message, throwable)
+    else if (LogLevel.TRACE == logLevel)
+      logger.trace(message, throwable)
+  }
 }
