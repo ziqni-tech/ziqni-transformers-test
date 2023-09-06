@@ -1,11 +1,11 @@
 package com.ziqni.transformer.test.store;
 
 import com.ziqni.admin.sdk.model.Result;
-import com.ziqni.transformer.test.models.ZiqniProduct;
 import com.ziqni.transformer.test.utils.ScalaUtils;
 import org.junit.jupiter.api.Test;
 import scala.Option;
 import scala.Some;
+import scala.collection.immutable.Map$;
 
 import java.util.Optional;
 
@@ -16,7 +16,6 @@ class ProductsStoreTest {
     private final ProductsStore productsStore;
 
     public ProductsStoreTest() {
-        final var accountId = "test-account";
         var ziqniStores = new ZiqniStores(StoreContext.StandAlone());
         ziqniStores.generateSampleData();
         this.productsStore = ziqniStores.productsStore;
@@ -24,11 +23,11 @@ class ProductsStoreTest {
 
     @Test
     void getIdByReferenceId() {
-        final var productsFuture = productsStore.getIdByReferenceId("test-product-ref-id1");
-        final var productOptional = productsFuture.join();
-        assertNotNull(productOptional);
-        assertNotNull(productOptional);
-        assertTrue(productOptional.isPresent());
+        final var productCompletableFuture = productsStore.getByReferenceId("test-product-ref-id1");
+        final var product = productCompletableFuture.join();
+        assertNotNull(product);
+        assertNotNull(product.getProductId());
+        assertEquals(product.getProductReferenceId(), "test-product-ref-id1");
     }
 
     @Test
@@ -42,28 +41,26 @@ class ProductsStoreTest {
     @Test
     void findZiqniProductById() {
         final var productById = productsStore.findZiqniProductById("prod-1");
-        Optional<ZiqniProduct> basicProductOptional = productById.join();
+        final var basicProductOptional = productById.join();
         assertNotNull(basicProductOptional);
-        assertNotNull(basicProductOptional.get());
-        assertNotNull(basicProductOptional.get().getMetaData());
+        assertNotNull(basicProductOptional.getMetaData());
     }
 
     @Test
     void create() {
-        final var productFuture = productsStore.create("test-product-ref-id-1", "test-product", ScalaUtils.emptySeqString, "test", 2.0, Option.empty());
-        Optional<String> productIdOptional = productFuture.join();
+        final var productFuture = productsStore.create("test-product-ref-id-1", "test-product", ScalaUtils.emptySeqString, "test", 2.0, Map$.MODULE$.empty());
+        final var productIdOptional = productFuture.join();
         assertNotNull(productIdOptional);
-        assertNotNull(productIdOptional.get());
+        assertNotNull(productIdOptional.getProductId());
     }
 
     @Test
     void update() {
         final var productFuture = productsStore.update("prod-1" ,new Some<>("test-product-ref-id-1"), new Some<>("updated-test-product"), Option.empty(), Option.apply("test"), Option.apply(1.0), Option.empty());
         assertFalse(productFuture.isCompletedExceptionally());
-        Optional<Result> productIdOptional = productFuture.join();
+        final var productIdOptional = productFuture.join();
         assertNotNull(productIdOptional);
-        assertNotNull(productIdOptional.get());
-        assertNotNull(productIdOptional.get().getId());
+        assertNotNull(productIdOptional.getProductId());
     }
 
     @Test
@@ -71,7 +68,7 @@ class ProductsStoreTest {
         final var productFuture = productsStore.delete("prod-1");
         Optional<Result> productIdOptional = productFuture.join();
         assertNotNull(productIdOptional);
-        assertNotNull(productIdOptional.get());
+        assertTrue(productIdOptional.isPresent());
         assertNotNull(productIdOptional.get().getId());
     }
 

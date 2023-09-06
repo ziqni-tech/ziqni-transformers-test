@@ -14,7 +14,6 @@ class ContestsStoreTest {
     private final ContestsStore contestsStore;
 
     public ContestsStoreTest() {
-        String accountId = "test-account";
         var ziqniStores = new ZiqniStores(StoreContext.StandAlone());
         ziqniStores.generateSampleData();
         this.contestsStore = ziqniStores.contestsStore;
@@ -26,8 +25,7 @@ class ContestsStoreTest {
         contest.join();
         assertNotNull(contest);
         assertNotNull(contest.get());
-        assertNotNull(contest.get().get());
-        assertNotNull(contest.get().get().getName());
+        assertNotNull(contest.get().getName());
     }
 
     @Test
@@ -36,7 +34,7 @@ class ContestsStoreTest {
         contest.join();
         assertNotNull(contest);
         assertNotNull(contest.get());
-        assertNotNull(contest.get().get());
+        assertTrue(contest.get().isPresent());
         assertNotNull(contest.get().get().getName());
     }
 
@@ -49,8 +47,7 @@ class ContestsStoreTest {
         contest.join();
         assertNotNull(contest);
         assertNotNull(contest.get());
-        assertNotNull(contest.get().get());
-        assertNotNull(contest.get().get().getName());
+        assertNotNull(contest.get().getName());
     }
 
     @Test

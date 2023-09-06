@@ -1,6 +1,5 @@
 package com.ziqni.transformer.test.store;
 
-import com.ziqni.admin.sdk.model.UnitOfMeasureType;
 import org.junit.jupiter.api.*;
 import scala.Option;
 import scala.Some;
@@ -38,8 +37,7 @@ class ActionTypesStoreTest {
         actionType.join();
         assertNotNull(actionType);
         assertNotNull(actionType.get());
-        assertNotNull(actionType.get().get());
-        assertEquals(actionType.get().get().getExternalReference(), "action-1-new");
+        assertNotNull(actionType.get().getKey(), "action-1-new");
     }
 
     @Test

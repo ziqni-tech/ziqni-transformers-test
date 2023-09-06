@@ -15,7 +15,6 @@ class MembersStoreTest {
     private final MembersStore membersStore;
 
     public MembersStoreTest() {
-        String accountId = "test-account";
         var ziqniStores = new ZiqniStores(StoreContext.StandAlone());
         ziqniStores.generateSampleData();
         this.membersStore = ziqniStores.membersStore;
@@ -62,7 +61,6 @@ class MembersStoreTest {
         contest.join();
         assertNotNull(contest);
         assertNotNull(contest.get());
-        assertNotNull(contest.get().get());
     }
 
     @Test
@@ -70,7 +68,7 @@ class MembersStoreTest {
         final var member = membersStore.findMemberById("memb-1");
         member.join();
         assertNotNull(member);
-        assertNotNull(member.get());
+        assertTrue(member.get().isPresent());
         assertNotNull(member.get().get());
     }
 

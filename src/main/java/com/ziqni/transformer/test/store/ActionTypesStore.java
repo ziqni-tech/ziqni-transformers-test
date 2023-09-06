@@ -47,12 +47,20 @@ public class ActionTypesStore implements AsyncCacheLoader<@NonNull String, Actio
         return cache.get(action).thenApply(Optional::ofNullable);
     }
 
-    public CompletableFuture<String> getOrCreateEventAction(String action, Supplier<CreateEventActionRequest> supplier){
-
+    public CompletableFuture<String> getOrCreateEventAction(String action, Supplier<CreateEventActionRequest> toCreate){
+        return cache.get(action).thenApply(Optional::ofNullable).thenCompose(actionTypeEntry -> {
+            if(actionTypeEntry.isPresent())
+                return CompletableFuture.supplyAsync(() -> actionTypeEntry.get().key);
+            else {
+                final var createAs = toCreate.get();
+                return create(createAs.action(), createAs.name(), Option.apply(createAs.metadata()), createAs.unitOfMeasureKey().getOrElse(UnitOfMeasureType.OTHER::getValue))
+                        .thenApply(result -> result.key);
+            }
+        });
     }
 
-    public CompletableFuture<Optional<Result>> create(final String action, Option<String> name, Option<scala.collection.Map<String, String>> metaData, String unitOfMeasureKey) {
-        final var out = new CompletableFuture<Optional<Result>>();
+    public CompletableFuture<ActionTypeEntry> create(final String action, Option<String> name, Option<scala.collection.Map<String, String>> metaData, String unitOfMeasureKey) {
+        final var out = new CompletableFuture<ActionTypeEntry>();
         var isInCache = Objects.nonNull(this.cache.getIfPresent(action));
 
         if(isInCache)
@@ -64,10 +72,7 @@ public class ActionTypesStore implements AsyncCacheLoader<@NonNull String, Actio
             }
             actionTypeEntry.setKey(action);
             this.cache.put(actionTypeEntry.getKey(), CompletableFuture.completedFuture(actionTypeEntry));
-            out.complete(Optional.of(new Result()
-                    .id(actionTypeEntry.getId())
-                    .result("CREATED")
-                    .externalReference(actionTypeEntry.getKey())));
+            out.complete(actionTypeEntry);
         }
 
         return out;

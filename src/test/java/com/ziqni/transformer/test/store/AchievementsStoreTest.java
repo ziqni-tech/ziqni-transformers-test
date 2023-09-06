@@ -1,14 +1,8 @@
 package com.ziqni.transformer.test.store;
 
-import com.ziqni.transformer.test.models.ZiqniAchievement;
 import org.junit.jupiter.api.Test;
-
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-
 import static org.junit.jupiter.api.Assertions.*;
-
 
 class AchievementsStoreTest {
 
@@ -29,8 +23,7 @@ class AchievementsStoreTest {
         achievement.join();
         assertNotNull(achievement);
         assertNotNull(achievement.get());
-        assertNotNull(achievement.get().get());
-        assertNotNull(achievement.get().get().getName());
+        assertNotNull(achievement.get().getName());
 
     }
 
