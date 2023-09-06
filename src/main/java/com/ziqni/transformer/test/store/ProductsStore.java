@@ -2,9 +2,7 @@ package com.ziqni.transformer.test.store;
 
 import com.github.benmanes.caffeine.cache.*;
 import com.ziqni.admin.sdk.ApiException;
-import com.ziqni.admin.sdk.ZiqniAdminApiFactory;
 import com.ziqni.admin.sdk.model.ActionTypeAdjustmentFactor;
-import com.ziqni.admin.sdk.model.Member;
 import com.ziqni.admin.sdk.model.Product;
 import com.ziqni.admin.sdk.model.Result;
 import com.ziqni.transformer.test.concurrent.ZiqniConcurrentHashMap;
@@ -19,7 +17,6 @@ import scala.collection.JavaConverters;
 import scala.collection.Seq;
 import scala.concurrent.Future;
 
-import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.Map;
 import java.util.Objects;
@@ -37,7 +34,7 @@ public class ProductsStore implements AsyncCacheLoader<@NonNull String, @NonNull
     private final ZiqniConcurrentHashMap<String, String> refIdCache = new ZiqniConcurrentHashMap<>();
     public final AsyncLoadingCache<@org.checkerframework.checker.nullness.qual.NonNull String, @org.checkerframework.checker.nullness.qual.NonNull Product> cache;
 
-    public ProductsStore(StoreContext context) {
+    public ProductsStore() {
         cache = Caffeine
                 .newBuilder()
                 .expireAfterAccess(5, TimeUnit.MINUTES)
@@ -48,7 +45,7 @@ public class ProductsStore implements AsyncCacheLoader<@NonNull String, @NonNull
     }
 
     public CompletableFuture<ZiqniProduct> getByReferenceId(String productRefId) {
-        return Optional.of(refIdCache.get(productRefId)).map(s -> findZiqniProductById(s)).orElseThrow(() -> new ZiqniNotFoundException("ZiqniProduct",productRefId,true));
+        return Optional.of(refIdCache.get(productRefId)).map(this::findZiqniProductById).orElseThrow(() -> new ZiqniNotFoundException("ZiqniProduct",productRefId,true));
     }
 
     public CompletableFuture<String> getRefIdByProductId(String productId) {
@@ -67,8 +64,7 @@ public class ProductsStore implements AsyncCacheLoader<@NonNull String, @NonNull
         if(this.refIdCache.containsKey(productRefId))
             out.completeExceptionally(new ApiException("product_ref_id_already_exists")); // or whatever we throw
         else {
-            final var providersToCreate = JavaConverters.seqAsJavaList(tags);
-            final Map<String,String> metadataOut = metaData.isEmpty() ? Map.of() : JavaConverters.mapAsJavaMap(metaData);
+            final Map<String,String> metadataOut = metaData.isEmpty() ? Map.of() : scala.jdk.CollectionConverters.MapHasAsJava(metaData).asJava();
             final var product = makeMock()
                     .name(displayName)
                     .productRefId(productRefId)
@@ -137,6 +133,24 @@ public class ProductsStore implements AsyncCacheLoader<@NonNull String, @NonNull
                 .result("DELETED")));
     }
 
+    public void makeMockAndPush(String prefix, int identifierCount){
+        final var mock = new Product()
+                .id(prefix + identifierCount)
+                .spaceName("test-space-name")
+                .created(OffsetDateTime.now())
+                .customFields(java.util.Map.of("test-custom-field","test-val"))
+                .addTagsItem("test-tag")
+                .metadata(java.util.Map.of("test-metadata","test-val"))
+                .name("Test-product-"+identifierCount)
+                .description("Test-description")
+                .adjustmentFactor(2.0)
+                .productRefId("test-product-ref-id-"+identifierCount)
+                .addActionTypeAdjustmentFactorsItem(new ActionTypeAdjustmentFactor().actionTypeId("test-action-type-id").adjustmentFactor(2.0))
+                ;
+        this.cache.put(mock.getId(),CompletableFuture.supplyAsync( () -> mock));
+        this.refIdCache.put(mock.getProductRefId(),mock.getId());
+    }
+
     public Product makeMock(){
         final var identifierCount = identifierCounter.incrementAndGet();
         return new Product()
@@ -149,7 +163,7 @@ public class ProductsStore implements AsyncCacheLoader<@NonNull String, @NonNull
                 .name("Test-product-"+identifierCount)
                 .description("Test-description")
                 .adjustmentFactor(2.0)
-                .productRefId("test-product-ref-id")
+                .productRefId("test-product-ref-id-"+identifierCount)
                 .addActionTypeAdjustmentFactorsItem(new ActionTypeAdjustmentFactor().actionTypeId("test-action-type-id").adjustmentFactor(2.0));
     }
 

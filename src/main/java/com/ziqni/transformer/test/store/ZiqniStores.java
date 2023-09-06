@@ -23,7 +23,7 @@ public class ZiqniStores {
 
     public ZiqniStores(StoreContext context) {
         this.membersStore = new MembersStore(context);
-        this.productsStore = new ProductsStore(context);
+        this.productsStore = new ProductsStore();
         this.actionTypesStore = new ActionTypesStore(context);
         this.achievementsStore = new AchievementsStore(context);
         this.contestsStore = new ContestsStore(context);
@@ -38,7 +38,7 @@ public class ZiqniStores {
             achievementsStore.getAchievement("ach-" + x);
             contestsStore.getContest("cont-" + x);
             membersStore.getRefIdByMemberId("memb-" + x);
-            productsStore.getRefIdByProductId("prod-" + x);
+            productsStore.makeMockAndPush("prod-",x);
             unitsOfMeasureStore.getUnitOfMeasure("uom-" + x);
             rewardStore.getReward("reward-" + x);
             awardStore.getAward("award-" + x);

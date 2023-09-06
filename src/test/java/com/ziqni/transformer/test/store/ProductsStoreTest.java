@@ -23,11 +23,11 @@ class ProductsStoreTest {
 
     @Test
     void getIdByReferenceId() {
-        final var productCompletableFuture = productsStore.getByReferenceId("test-product-ref-id1");
+        final var productCompletableFuture = productsStore.getByReferenceId("test-product-ref-id-1");
         final var product = productCompletableFuture.join();
         assertNotNull(product);
         assertNotNull(product.getProductId());
-        assertEquals(product.getProductReferenceId(), "test-product-ref-id1");
+        assertEquals(product.getProductReferenceId(), "test-product-ref-id-1");
     }
 
     @Test
@@ -48,7 +48,7 @@ class ProductsStoreTest {
 
     @Test
     void create() {
-        final var productFuture = productsStore.create("test-product-ref-id-1", "test-product", ScalaUtils.emptySeqString, "test", 2.0, Map$.MODULE$.empty());
+        final var productFuture = productsStore.create("test-product-ref-id--1", "test-product", ScalaUtils.emptySeqString, "test", 2.0, Map$.MODULE$.empty());
         final var productIdOptional = productFuture.join();
         assertNotNull(productIdOptional);
         assertNotNull(productIdOptional.getProductId());
