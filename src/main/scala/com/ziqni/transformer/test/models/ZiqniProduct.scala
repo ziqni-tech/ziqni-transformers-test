@@ -1,7 +1,6 @@
 package com.ziqni.transformer.test.models
 
 import com.ziqni.transformers.domain
-import com.ziqni.transformers.domain.ZiqniProduct
 
 import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsScala}
 

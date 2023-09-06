@@ -3,7 +3,6 @@ package com.ziqni.transformer.test.models
 import com.typesafe.scalalogging.LazyLogging
 import com.ziqni.admin.sdk.model.Contest
 import com.ziqni.transformers.domain
-import com.ziqni.transformers.domain.ZiqniContest
 import org.joda.time.DateTime
 
 import java.time.OffsetDateTime

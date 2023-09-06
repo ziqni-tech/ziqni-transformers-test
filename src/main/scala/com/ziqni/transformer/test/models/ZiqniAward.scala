@@ -1,7 +1,6 @@
 package com.ziqni.transformer.test.models
 
 import com.ziqni.admin.sdk.model.Award
-import com.ziqni.transformers.domain.ZiqniAward
 
 case class ZiqniAward(award: Award) extends com.ziqni.transformers.domain.ZiqniAward with ZiqniHelper {
 

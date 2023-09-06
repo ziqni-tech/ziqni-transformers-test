@@ -66,7 +66,9 @@ case class ZiqniAchievement(achievement: Achievement) extends com.ziqni.transfor
 		None
 	}
 
-	override def getStatus(): String = achievement.getStatus.getValue
+	override def getStatus(): String = {
+		achievement.getStatus.getValue
+	}
 
 	override def getMetaData: Option[Map[String, String]] = achievement.getMetadata
 

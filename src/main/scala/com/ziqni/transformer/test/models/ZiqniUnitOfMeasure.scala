@@ -1,7 +1,6 @@
 package com.ziqni.transformer.test.models
 
 import com.ziqni.admin.sdk.model.UnitOfMeasure
-import com.ziqni.transformers.domain.ZiqniUnitOfMeasure
 
 case class ZiqniUnitOfMeasure(uom: UnitOfMeasure) extends com.ziqni.transformers.domain.ZiqniUnitOfMeasure with ZiqniHelper {
 

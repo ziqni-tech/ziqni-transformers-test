@@ -2,7 +2,6 @@ package com.ziqni.transformer.test.models
 
 import com.ziqni.admin.sdk.model.Reward
 import com.ziqni.transformers.domain
-import com.ziqni.transformers.domain.ZiqniReward
 
 import scala.jdk.CollectionConverters._
 import scala.language.implicitConversions
