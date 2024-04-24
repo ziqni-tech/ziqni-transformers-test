@@ -118,4 +118,9 @@ final case class ZiqniApiAsyncClient(ziqniStores: ZiqniStores, masterAccount: Op
 
 	override def getUnitOfMeasure(unitOfMeasureId: String): Future[Option[ZiqniUnitOfMeasure]] =
 		ziqniStores.unitsOfMeasureStore.getZiqniUnitOfMeasure(unitOfMeasureId).asScala.map( x => { if(x.isPresent) Option(x.get()) else None })
+
+	override def pushEventAndSetTransactionCache(event: ZiqniEvent, eventsToCache: Seq[ZiqniEvent] => Seq[ZiqniEvent]): Future[Boolean] = {
+		val out = ziqniStores.eventsStore.pushEventTransaction(event).asScala.map(x => x.getMeta.getErrorCount == 0)(transformerExecutionContext)
+		out
+	}
 }

@@ -115,13 +115,12 @@ public class MembersStore implements AsyncCacheLoader<@NonNull String, @NonNull 
     }
 
     public CompletableFuture<ZiqniMember> update(String memberId, scala.Option<String> memberRefId, scala.Option<String> displayName, scala.Option<scala.collection.Seq<String>> tagsToUpdate) {
-        final var out = new CompletableFuture<ZiqniMember>();
+
         var isNotInCache = Objects.isNull(this.cache.getIfPresent(memberId));
         if(isNotInCache)
-            out.completeExceptionally(new ApiException("member_with_id_[" + memberId + "]_does_not_exist")); // or whatever we throw
+            return CompletableFuture.failedFuture(new ApiException("member_with_id_[" + memberId + "]_does_not_exist")); // or whatever we throw
         else {
-            this.cache.getIfPresent(memberId)
-                    .thenApply(x -> {
+            return this.cache.get(memberId).thenCompose(x -> {
                 if (!memberRefId.isEmpty())
                     x.memberRefId(memberRefId.get());
                 if (!displayName.isEmpty())
@@ -129,13 +128,10 @@ public class MembersStore implements AsyncCacheLoader<@NonNull String, @NonNull 
                 if (!tagsToUpdate.isEmpty())
                     x.tags(JavaConverters.seqAsJavaList(tagsToUpdate.get()));
 
-                out.complete(new ZiqniMember(x));
-                return x;
+                this.cache.put(memberId,CompletableFuture.completedFuture(x));
+                return CompletableFuture.completedFuture(new ZiqniMember(x));
             });
-
         }
-
-        return out;
     }
 
     public CompletableFuture<ZiqniMember> findZiqniMemberById(String memberId) {

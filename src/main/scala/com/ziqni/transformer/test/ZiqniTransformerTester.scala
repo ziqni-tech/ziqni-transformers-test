@@ -19,7 +19,7 @@ object ZiqniTransformerTester {
     val context = ZiqniContextExt(
       TestAccountId,
       TestSpaceName,
-      ZiqniTransformerInfo("TEST_CONNECTION_UW3M", "my-test-connection", "TEST_TRANSFORMER_UW3"),
+      ZiqniTransformerInfo("TEST_CONNECTION_UW3M", "my-test-connection", "TEST_TRANSFORMER_UW3", Map.empty),
       ziqniApi,
       ziqniApiAsync,
       DefaultZiqniApiHttp,
