@@ -122,8 +122,8 @@ final case class ZiqniApiAsyncClient(ziqniStores: ZiqniStores, masterAccount: Op
 	override def pushEventAndSetTransactionCache(event: ZiqniEvent, eventsToCache: Seq[ZiqniEvent] => Seq[ZiqniEvent]): Future[Boolean] =
 		ziqniStores.eventsStore.pushEventTransaction(event).asScala.map(x => x.getMeta.getErrorCount == 0)(transformerExecutionContext)
 
-	override def getAwardsBy(statusCodeFrom: StatusCode, statusCodeTo: StatusCode, skip: Int, limit: Int, activeFrom: Option[Long], activeUntil: Option[Long], rewardTypeKey: Option[String], memberId: Option[String], rewardId: Option[String], entityId: Option[String]): Future[ZiqniQueryResult[domain.ZiqniAward]] =
-		ziqniStores.awardStore.getAwardsByStatusCodeCreatedDate(statusCodeFrom, statusCodeTo,	skip, limit, activeFrom, activeUntil, rewardTypeKey, memberId, rewardId, entityId).asScala
+	override def getAwardsBy(statusCodeFrom: Int, statusCodeTo: Int, skip: Int, limit: Int, activeFrom: Option[Long], activeUntil: Option[Long], rewardTypeKey: Option[String], memberId: Option[String], rewardId: Option[String], entityId: Option[String]): Future[ZiqniQueryResult[_<:domain.ZiqniAward]] =
+		ziqniStores.awardStore.getAwardsBy(statusCodeFrom, statusCodeTo,	skip, limit, activeFrom, activeUntil, rewardTypeKey, memberId, rewardId, entityId).asScala
 
 	override def updateAwardsState(awardId: String, action: AwardStateActions, constraints: Option[Seq[String]], transactionReferenceId: Option[String], reasonForChange: Option[String]): Future[domain.ZiqniAward] =
 		ziqniStores.awardStore.updateAwardsState(awardId, action.code, constraints.getOrElse(Seq.empty).asJava, transactionReferenceId.orNull, reasonForChange.orNull).asScala

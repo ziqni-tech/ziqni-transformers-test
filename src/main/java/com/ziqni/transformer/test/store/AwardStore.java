@@ -49,7 +49,7 @@ public class AwardStore implements AsyncCacheLoader<@NonNull String, @NonNull Aw
         return cache.get(id);
     }
 
-    public CompletableFuture<ZiqniQueryResult<com.ziqni.transformers.domain.ZiqniAward>> getAwardsByStatusCodeCreatedDate(int statusCodeFrom, int statusCodeTo, long skip, long limit, scala.Option<scala.Long> activeFrom, scala.Option<scala.Long> activeUntil, scala.Option<String> rewardTypeKey, scala.Option<String> memberId, scala.Option<String> rewardId, scala.Option<String> entityId){
+    public CompletableFuture<ZiqniQueryResult<ZiqniAward>> getAwardsBy(int statusCodeFrom, int statusCodeTo, long skip, long limit, scala.Option<scala.Long> activeFrom, scala.Option<scala.Long> activeUntil, scala.Option<String> rewardTypeKey, scala.Option<String> memberId, scala.Option<String> rewardId, scala.Option<String> entityId){
 
         AtomicLong counterTotal = new AtomicLong(0);
         AtomicLong counterSkip = new AtomicLong(skip);
@@ -85,15 +85,15 @@ public class AwardStore implements AsyncCacheLoader<@NonNull String, @NonNull Aw
                 results.toArray(new CompletableFuture[0])
         );
 
-        CompletableFuture<List<com.ziqni.transformers.domain.ZiqniAward>> allResultsFuture = allFutures.thenApply(v ->
+        CompletableFuture<List<ZiqniAward>> allResultsFuture = allFutures.thenApply(v ->
                 results.stream()
                         .map(CompletableFuture::join)
                         .collect(Collectors.toList())
         );
 
-        List<com.ziqni.transformers.domain.ZiqniAward> finalResults = allResultsFuture.join();
+        List<ZiqniAward> finalResults = allResultsFuture.join();
 
-        final Seq<com.ziqni.transformers.domain.ZiqniAward> out= CollectionConverters.ListHasAsScala(finalResults).asScala().toSeq();
+        final Seq<ZiqniAward> out= CollectionConverters.ListHasAsScala(finalResults).asScala().toSeq();
         return CompletableFuture.completedFuture(new ZiqniQueryResult<>(finalResults.size(), finalResults.size(), skip, limit, out ));
     }
 
