@@ -34,4 +34,9 @@ case class ZiqniAward(award: Award) extends com.ziqni.transformers.domain.ZiqniA
 	}//award.claimed
 
 
+	override def getStatusCode: StatusCode = award.getStatusCode
+
+	override def getActiveFrom: Long = award.getActiveFrom.toEpochSecond
+
+	override def getActiveUntil: Long = award.getActiveUntil.toEpochSecond
 }

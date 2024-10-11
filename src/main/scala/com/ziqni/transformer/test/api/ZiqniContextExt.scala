@@ -6,6 +6,7 @@ import com.ziqni.transformers.domain.ZiqniAccount
 import com.ziqni.transformers._
 
 import scala.concurrent.ExecutionContextExecutor
+import scala.reflect.ClassTag
 
 case class ZiqniContextExt(_accountId: String,
                            _spaceName: String,
@@ -54,4 +55,6 @@ case class ZiqniContextExt(_accountId: String,
     else if (LogLevel.TRACE == logLevel)
       logger.trace(message, throwable)
   }
+
+  override def $[TZ](t: String)(implicit ct: ClassTag[TZ]): TZ = ???
 }

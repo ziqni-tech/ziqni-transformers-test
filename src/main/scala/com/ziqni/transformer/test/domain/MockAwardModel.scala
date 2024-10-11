@@ -20,6 +20,7 @@ class MockAward(
 						rewardTypeId: String,
 						rewardId: String,
 						rewardMetaData: Option[Map[String, String]]
+
 					) extends com.ziqni.transformers.domain.ZiqniAward {
 
 	override def getEntityId: String = entityId
@@ -48,4 +49,9 @@ class MockAward(
 
 	override def getRewardMetaData: Option[Map[String, String]] = rewardMetaData
 
+	override def getStatusCode: Int = ???
+
+	override def getActiveFrom: Long = ???
+
+	override def getActiveUntil: Long = ???
 }

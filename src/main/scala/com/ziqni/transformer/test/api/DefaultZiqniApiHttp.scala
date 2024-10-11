@@ -1,10 +1,12 @@
 package com.ziqni.transformer.test.api
 
 import com.ziqni.transformers.{ZiqniApiHttp, ZiqniContext}
-import com.ziqni.transformers.domain.{ZiqniAuthCredentials, HttpResponseEntity}
+import com.ziqni.transformers.domain.{HttpResponseEntity, ZiqniAuthCredentials}
 import sttp.client.{UriContext, basicRequest, _}
 import sttp.client.quick.backend
 import sttp.model.Method
+
+import scala.concurrent.Future
 
 object DefaultZiqniApiHttp extends com.ziqni.transformers.ZiqniApiHttp {
 
@@ -78,4 +80,12 @@ object DefaultZiqniApiHttp extends com.ziqni.transformers.ZiqniApiHttp {
       }
     )
   }
+
+  override def httpGetWithLogMessageAsync(url: String, headers: Map[String, Seq[String]], basicAuthCredentials: Option[ZiqniAuthCredentials], sendCompressed: Boolean, logMessage: Option[String], ziqniContext: ZiqniContext): Future[HttpResponseEntity] = ???
+
+  override def httpPutWithLogMessageAsync(url: String, body: String, headers: Map[String, Seq[String]], basicAuthCredentials: Option[ZiqniAuthCredentials], sendCompressed: Boolean, logMessage: Option[String], ziqniContext: ZiqniContext): Future[HttpResponseEntity] = ???
+
+  override def httpPostWithLogMessageAsync(url: String, body: String, headers: Map[String, Seq[String]], basicAuthCredentials: Option[ZiqniAuthCredentials], sendCompressed: Boolean, logMessage: Option[String], ziqniContext: ZiqniContext): Future[HttpResponseEntity] = ???
+
+  override def httpDeleteWithLogMessageAsync(url: String, headers: Map[String, Seq[String]], basicAuthCredentials: Option[ZiqniAuthCredentials], sendCompressed: Boolean, logMessage: Option[String], ziqniContext: ZiqniContext): Future[HttpResponseEntity] = ???
 }
