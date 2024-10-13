@@ -3,7 +3,7 @@ package com.ziqni.transformer.test.api
 import com.ziqni.admin.sdk.model.Space
 import com.ziqni.transformer.test.models._
 import com.ziqni.transformer.test.store.ZiqniStores
-import com.ziqni.transformers.domain.{AwardStateActions, CreateEventActionRequest, CreateMemberRequest, CreateProductRequest, CustomFieldEntry, ZiqniEvent, ZiqniMember, ZiqniProduct, ZiqniQueryResult, ZiqniUnitOfMeasure}
+import com.ziqni.transformers.domain.{AwardStateActions, CreateEventActionRequest, CreateMemberRequest, CreateProductRequest, CustomFieldEntry, ZiqniEvent, ZiqniGoalMetric, ZiqniMember, ZiqniProduct, ZiqniQueryResult, ZiqniUnitOfMeasure}
 import com.ziqni.transformers.{ZiqniApi, domain}
 
 import java.util.concurrent.ConcurrentHashMap
@@ -127,4 +127,7 @@ final case class ZiqniApiAsyncClient(ziqniStores: ZiqniStores, masterAccount: Op
 
 	override def updateAwardsState(awardId: String, action: AwardStateActions, constraints: Option[Seq[String]], transactionReferenceId: Option[String], reasonForChange: Option[String]): Future[domain.ZiqniAward] =
 		ziqniStores.awardStore.updateAwardsState(awardId, action.code, constraints.getOrElse(Seq.empty).asJava, transactionReferenceId.orNull, reasonForChange.orNull).asScala
+
+	override def getGoalMetrics(memberIds: Seq[String], entityIds: Seq[String]): Future[Seq[ZiqniGoalMetric]] =
+		ziqniStores.goalMetricsStore.getGoalMetrics(memberIds.asJava, entityIds.asJava).asScala.map(x=>x.asScala.toSeq)(transformerExecutionContext)
 }

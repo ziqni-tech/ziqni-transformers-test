@@ -19,6 +19,7 @@ public class ZiqniStores {
     public final ContestsStore contestsStore;
     public final RewardStore rewardStore;
     public final AwardStore awardStore;
+    public final GoalMetricsStore goalMetricsStore;
    public final UnitsOfMeasureStore unitsOfMeasureStore;
 
     public ZiqniStores(StoreContext context) {
@@ -28,7 +29,8 @@ public class ZiqniStores {
         this.achievementsStore = new AchievementsStore(context);
         this.contestsStore = new ContestsStore(context);
         this.rewardStore = new RewardStore(context);
-        this.awardStore = new AwardStore(rewardStore,context);
+        this.awardStore = new AwardStore(rewardStore, context);
+        this.goalMetricsStore = new GoalMetricsStore(awardStore ,context);
         this.unitsOfMeasureStore = new UnitsOfMeasureStore(context);
         this.eventsStore = new EventsStore(productsStore, membersStore, actionTypesStore,context);
     }
