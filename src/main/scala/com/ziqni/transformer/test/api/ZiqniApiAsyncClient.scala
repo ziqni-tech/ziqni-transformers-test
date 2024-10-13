@@ -130,4 +130,7 @@ final case class ZiqniApiAsyncClient(ziqniStores: ZiqniStores, masterAccount: Op
 
 	override def getGoalMetrics(memberIds: Seq[String], entityIds: Seq[String]): Future[Seq[ZiqniGoalMetric]] =
 		ziqniStores.goalMetricsStore.getGoalMetrics(memberIds.asJava, entityIds.asJava).asScala.map(x=>x.asScala.toSeq)(transformerExecutionContext)
+
+	override def getGoalMetric(memberId: String, entityId: String): Future[ZiqniGoalMetric] =
+		ziqniStores.goalMetricsStore.getGoalMetric(memberId, entityId).asScala
 }

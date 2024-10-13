@@ -15,7 +15,6 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.stream.Collectors;
 
 public class GoalMetricsStore implements AsyncCacheLoader< GoalMetricsStore.GoalMetricKey, GoalMetrics>, RemovalListener<GoalMetricsStore.GoalMetricKey, GoalMetrics> {
 
@@ -41,6 +40,15 @@ public class GoalMetricsStore implements AsyncCacheLoader< GoalMetricsStore.Goal
                 .getAll(keys)
                 .thenApply( metricsMap ->
                         metricsMap.values().stream().map(y -> new MockGoalMetric(y).asZiqniGoalMetric()).toList()
+                );
+    }
+
+    public CompletableFuture<ZiqniGoalMetric> getGoalMetric(String memberId, String entityId){
+        final var key = new GoalMetricKey(memberId, entityId);
+        return this.cache
+                .get(key)
+                .thenApply( metric ->
+                        new MockGoalMetric(metric).asZiqniGoalMetric()
                 );
     }
 
